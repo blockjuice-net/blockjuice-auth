@@ -4,36 +4,37 @@ var router = express.Router();
 import dotenv from 'dotenv';
 dotenv.config();
 
-//Load settings
 const { 
-        AUTH_CALLBACK, 
-        SIGN_CALLBACK, 
-        BACKGROUND_COLOR 
-      } = process.env;
+  AUTH_CALLBACK, 
+  SIGN_CALLBACK, 
+  BACKGROUND_COLOR 
+} = process.env;
 
 /* GET users listing. */
-router.get('/login/:logintype', function(req, res, next) {
+router.get('/login/:logintype', (req, res, next) => {
 
-  //redirect browser to OAuth flow
-function loginHandler(oreId) {
-  return asyncHandler(async function(req, res, next) {
-    const provider = req.params.logintype;
-    let authUrl = await oreId.getOreIdAuthUrl({ provider, callbackUrl: AUTH_CALLBACK, signCallbackUrl: SIGN_CALLBACK, backgroundColor: BACKGROUND_COLOR });
-    //redirect browser
-    res.redirect(authUrl);
-  });
-}
+  const provider = req.params.logintype;
+  let authUrl = req.app.locals.auth.authUrl({ 
+      provider: provider, 
+      callbackUrl: AUTH_CALLBACK, 
+      signCallbackUrl: SIGN_CALLBACK, 
+      backgroundColor: BACKGROUND_COLOR 
+    });
+
+  res.redirect(authUrl);
 
 });
 
-app.use('/login/:logintype', usersRouter);
-app.use('/authcallback', auth.authCallback, usersRouter);
-app.use('/signcallback', auth.signCallback);
+router.get('/authcallback', req.app.locals.auth.authCallback(), (req, res, next) => {
+  const { user } = req;
 
-//Generic async handler for Express Middleware
-const asyncHandler = (fn) => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+  if (user) {
+    return res.status(200).json(user);
+  } else {
+    return res.status(400).json({})
+  }
+});
 
+app.use('/signcallback', auth.signCallback());
 
 module.exports = router;
