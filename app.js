@@ -54,7 +54,7 @@ app.use('/popperjs', express.static(__dirname + '/node_modules/@popperjs%2fcore/
 
 app.use('/', indexRouter);
 app.use('/signcallback', auth.signCallback());
-app.use('/authcallback', auth.authCallback(),indexRouter);
+app.use('/authcallback', auth.authCallback(), indexRouter);
 
 // ---------------------------------------------------
 // catch 404 and forward to error handler
