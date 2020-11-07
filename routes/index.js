@@ -2,7 +2,7 @@ var express = require('express');
 var router  = express.Router();
 const log   = require('logbootstrap');
 
-import dotenv from 'dotenv';
+var dotenv  = require('dotenv');
 dotenv.config();
 
 const { 
@@ -30,7 +30,7 @@ router.get('/login/:logintype', (req, res, next) => {
 
 });
 
-router.get('/authcallback', req.app.locals.auth.authCallback(), (req, res, next) => {
+router.get('/authcallback', (req, res, next) => {
   
   const { user } = req;
   log('info', 'API /authcallback ' + JSON.stringify(user));

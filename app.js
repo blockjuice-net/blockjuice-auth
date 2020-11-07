@@ -5,11 +5,11 @@ var cookieParser  = require('cookie-parser');
 var logger        = require('morgan');
 var log           = require('logbootstrap');
 
-var indexRouter = require('./routes/index');
+var indexRouter   = require('./routes/index');
 
-var oreID = require('oreid-auth');
+var oreID         = require('oreid-auth');
+var dotenv        = require('dotenv');
 
-import dotenv from 'dotenv';
 dotenv.config();
 
 var app = express();
@@ -54,6 +54,7 @@ app.use('/popperjs', express.static(__dirname + '/node_modules/@popperjs%2fcore/
 
 app.use('/', indexRouter);
 app.use('/signcallback', auth.signCallback());
+app.use('/authcallback', auth.authCallback(),indexRouter);
 
 // ---------------------------------------------------
 // catch 404 and forward to error handler
