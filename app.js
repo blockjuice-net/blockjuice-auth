@@ -7,13 +7,14 @@ var log           = require('logbootstrap');
 
 var indexRouter   = require('./routes/index');
 
-var oreID         = require('oreid-auth');
+// var oreID         = require('oreid-auth');
 var dotenv        = require('dotenv');
 
 dotenv.config();
 
 var app = express();
 
+/*
 const { 
   OREID_APP_ID, 
   OREID_API_KEY, 
@@ -29,6 +30,7 @@ auth = oreID.init({
 });
 
 app.locals.auth = auth
+*/
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -53,8 +55,10 @@ app.use('/axios', express.static(__dirname + '/node_modules/axios/dist'));
 app.use('/popperjs', express.static(__dirname + '/node_modules/@popperjs%2fcore/dist/cjs'));
 
 app.use('/', indexRouter);
+/*
 app.use('/signcallback', auth.signCallback());
 app.use('/authcallback', auth.authCallback(), indexRouter);
+*/
 
 // ---------------------------------------------------
 // catch 404 and forward to error handler
