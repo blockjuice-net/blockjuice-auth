@@ -40,6 +40,7 @@ router.get('/authcallback', (req, res, next) => {
   } else {
     return res.status(400).json({})
   }
+  
 });
 
 router.get('/', (req, res, next) => {
