@@ -1,38 +1,25 @@
-var express = require('express');
-var router = express.Router();
+var express   = require('express');
+var router    = express.Router();
+const log     = require('logbootstrap');
 
-/*
-const { 
-  AUTH_CALLBACK, 
-  SIGN_CALLBACK, 
-  BACKGROUND_COLOR 
-} = process.env;
+router.post('/login', (req, res, next) => {
 
-router.get('/login/:logintype', (req, res, next) => {
+  var email = req.body.email;
+  var password = req.body.password;
 
-  const provider = req.params.logintype;
-  let authUrl = req.app.locals.auth.authUrl({ 
-      provider: provider, 
-      callbackUrl: AUTH_CALLBACK, 
-      signCallbackUrl: SIGN_CALLBACK, 
-      backgroundColor: BACKGROUND_COLOR 
-    });
-
-  res.redirect(authUrl);
+  req.app.locals.firebase.login(email, password, true, error => {
+    log('info', 'API LOGIN OK.');
+          
+  });
 
 });
 
-router.get('/authcallback', req.app.locals.auth.authCallback(), (req, res, next) => {
-  const { user } = req;
+router.get('/logout', (req, res, next) => {
 
-  if (user) {
-    return res.status(200).json(user);
-  } else {
-    return res.status(400).json({})
-  }
+  req.app.locals.firebase.logout(error => {
+    res.redirect('/');
+  });
+
 });
-
-app.use('/signcallback', auth.signCallback());
-*/
 
 module.exports = router;

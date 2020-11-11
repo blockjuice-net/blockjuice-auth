@@ -1,38 +1,60 @@
 // Firebase App (the core Firebase SDK) is always required and
 // must be listed before other Firebase SDKs
-var firebase = require("firebase/app");
+var firebase  = require("firebase/app");
+
+var google = new firebase.auth.GoogleAuthProvider();
+var facebook = new firebase.auth.FacebookAuthProvider();
+var twitter = new firebase.auth.TwitterAuthProvider();
+var github = new firebase.auth.GithubAuthProvider();
 
 // Add the Firebase products that you want to use
 require("firebase/auth");
 require("firebase/firestore");
 
-import dotenv from 'dotenv';
+const dotenv  = require('dotenv');
+const log     = require('logbootstrap');
+
 dotenv.config();
 
-const { 
-  FIREBASE_API_KEY, 
-  FIREBASE_AUTHDOMAIN,
-  FIREBASE_DATABASEURL,
-  FIREBASE_PROJECT_ID,
-  FIREBASE_STORAGEBUCKET,
-  FIREBASE_MESSAGESENDERID,
-  FIREBASE_APP_ID,
-  FIREBASE_MEASUREMENTID 
-} = process.env;
-
-// For Firebase JavaScript SDK v7.20.0 and later, `measurementId` is an optional field
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: FIREBASE_API_KEY,
-  authDomain: FIREBASE_AUTHDOMAIN,
-  databaseURL: FIREBASE_DATABASEURL,
-  projectId: FIREBASE_PROJECT_ID,
-  storageBucket: FIREBASE_STORAGEBUCKET,
-  messagingSenderId: FIREBASE_MESSAGESENDERID,
-  appId: FIREBASE_APP_ID,
-  measurementId: FIREBASE_MEASUREMENTID
+// Initialize Firebase
+let init = (config) => {
+  firebase.initializeApp(config);
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+let login = (email, password, create, callback) => {
+
+  if (create) {
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(error => {
+      errorSign(error, callback);
+    });
+  } else {
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(error => {
+      errorSign(error, callback);
+    });
+  }
+
+}
+
+let errorSign = (error, callback) => {
+  var errorCode = error.code;
+  var errorMessage = error.message;
+  log('error','Code: ' + errorCode + ' Message: ' + errorMessage);
+  callback(error);
+};
+
+let logout = (callback) => {
+  firebase.auth().signOut().then(() => {
+    // Sign-out successful.
+    callback(false);
+  }).catch(error => {
+    // An error happened.
+    errorSign(error, callback);
+  });
+}
+
+module.exports = {
+  init,
+  logout,
+  login
+};
 

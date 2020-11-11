@@ -15,6 +15,33 @@ dotenv.config();
 
 var app = express();
 
+const { 
+  FIREBASE_API_KEY, 
+  FIREBASE_AUTHDOMAIN,
+  FIREBASE_DATABASEURL,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGEBUCKET,
+  FIREBASE_MESSAGESENDERID,
+  FIREBASE_APP_ID,
+  FIREBASE_MEASUREMENTID 
+} = process.env;
+
+// For Firebase JavaScript SDK v7.20.0 and later, `measurementId` is an optional field
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTHDOMAIN,
+  databaseURL: FIREBASE_DATABASEURL,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGEBUCKET,
+  messagingSenderId: FIREBASE_MESSAGESENDERID,
+  appId: FIREBASE_APP_ID,
+  measurementId: FIREBASE_MEASUREMENTID
+};
+
+firebase.init(firebaseConfig);
+app.locals.firebase = firebase;
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
