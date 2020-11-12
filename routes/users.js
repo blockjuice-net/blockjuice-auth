@@ -9,7 +9,9 @@ router.post('/login', (req, res, next) => {
 
   req.app.locals.firebase.login(email, password, true, error => {
     log('info', 'API LOGIN OK.');
-          
+    res.render('dashboard', { 
+      title: '_clementineOS' 
+    });     
   });
 
 });
