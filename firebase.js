@@ -2,20 +2,19 @@
 // must be listed before other Firebase SDKs
 var firebase  = require("firebase/app");
 
-var google = new firebase.auth.GoogleAuthProvider();
-var facebook = new firebase.auth.FacebookAuthProvider();
-var twitter = new firebase.auth.TwitterAuthProvider();
-var github = new firebase.auth.GithubAuthProvider();
-
 // Add the Firebase products that you want to use
 require("firebase/auth");
 require("firebase/firestore");
 
 const dotenv  = require('dotenv');
-const log     = require('logbootstrap');
-const { indexOf } = require("lodash");
+const _ = require("lodash");
 
 dotenv.config();
+
+var google = new firebase.auth.GoogleAuthProvider();
+var facebook = new firebase.auth.FacebookAuthProvider();
+var twitter = new firebase.auth.TwitterAuthProvider();
+var github = new firebase.auth.GithubAuthProvider();
 
 // Initialize Firebase
 let init = (config) => {
@@ -26,25 +25,31 @@ let login = (email, password, create, callback) => {
 
   if (create) {
     firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
-        callback(null, user);
-      }).catch(error => {
-        errorSign(error, callback);
+      callback(null, user);
+    }).catch(error => {
+      callback(error, null);
     });
   } else {
     firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
       callback(null, user);
     }).catch(error => {
-      errorSign(error, callback);
+      callback(error, null);
     });
   }
 
 }
 
-let errorSign = (error, callback) => {
-  var errorCode = error.code;
-  var errorMessage = error.message;
-  
-  /*
+let logout = (callback) => {
+  firebase.auth().signOut().then(() => {
+    // Sign-out successful.
+    callback(false);
+  }).catch(error => {
+    // An error happened.
+    callback(error, null);
+  });
+}
+
+/*
 
   ERROR CODES
   -----------
@@ -61,19 +66,6 @@ let errorSign = (error, callback) => {
     Thrown if the password is not strong enough.
 
   */
-
-  callback(error, null);
-};
-
-let logout = (callback) => {
-  firebase.auth().signOut().then(() => {
-    // Sign-out successful.
-    callback(false);
-  }).catch(error => {
-    // An error happened.
-    errorSign(error, callback);
-  });
-}
 
 module.exports = {
   init,

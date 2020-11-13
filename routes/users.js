@@ -2,19 +2,22 @@ var express   = require('express');
 var router    = express.Router();
 const log     = require('logbootstrap');
 
-router.post('/login', (req, res, next) => {
+router.post('/login/:new', (req, res, next) => {
 
   var email = req.body.email;
   var password = req.body.password;
 
-  req.app.locals.firebase.login(email, password, true, (error, user) => {
+  var newUser = req.params.new == 'new'
 
-    if (error == null) {
+  req.app.locals.firebase.login(email, password, newUser, (error, user) => {
+
+    if (error != null) {
       log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
     } else {
       log('success','User: ' + JSON.stringify(user));
       res.render('dashboard', { 
-        title: '_clementineOS' 
+        title: '_clementineOS',
+        user: user
       });
     }
          
