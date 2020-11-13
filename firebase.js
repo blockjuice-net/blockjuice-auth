@@ -13,6 +13,7 @@ require("firebase/firestore");
 
 const dotenv  = require('dotenv');
 const log     = require('logbootstrap');
+const { indexOf } = require("lodash");
 
 dotenv.config();
 
@@ -24,11 +25,15 @@ let init = (config) => {
 let login = (email, password, create, callback) => {
 
   if (create) {
-    firebase.auth().createUserWithEmailAndPassword(email, password).catch(error => {
-      errorSign(error, callback);
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
+        callback(null, user);
+      }).catch(error => {
+        errorSign(error, callback);
     });
   } else {
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(error => {
+    firebase.auth().signInWithEmailAndPassword(email, password).then(user => {
+      callback(null, user);
+    }).catch(error => {
       errorSign(error, callback);
     });
   }
@@ -38,8 +43,26 @@ let login = (email, password, create, callback) => {
 let errorSign = (error, callback) => {
   var errorCode = error.code;
   var errorMessage = error.message;
-  log('error','Code: ' + errorCode + ' Message: ' + errorMessage);
-  callback(error);
+  
+  /*
+
+  ERROR CODES
+  -----------
+  auth/email-already-in-use
+    Thrown if there already exists an account with the given email address.
+  
+  auth/invalid-email
+    Thrown if the email address is not valid.
+  
+  auth/operation-not-allowed
+    Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
+  
+  auth/weak-password
+    Thrown if the password is not strong enough.
+
+  */
+
+  callback(error, null);
 };
 
 let logout = (callback) => {

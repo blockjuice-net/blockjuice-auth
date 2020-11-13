@@ -7,11 +7,17 @@ router.post('/login', (req, res, next) => {
   var email = req.body.email;
   var password = req.body.password;
 
-  req.app.locals.firebase.login(email, password, true, error => {
-    log('info', 'API LOGIN OK.');
-    res.render('dashboard', { 
-      title: '_clementineOS' 
-    });     
+  req.app.locals.firebase.login(email, password, true, (error, user) => {
+
+    if (error == null) {
+      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
+    } else {
+      log('success','User: ' + JSON.stringify(user));
+      res.render('dashboard', { 
+        title: '_clementineOS' 
+      });
+    }
+         
   });
 
 });
