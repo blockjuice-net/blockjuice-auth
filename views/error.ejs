@@ -1,3 +1,29 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <% include include/head.ejs %>
+    <link rel="stylesheet" href="css/dashboard-light.css">
+  </head>
+
+  <body class="d-flex flex-column h-100">
+    <!-- Begin page content -->
+    <main role="main" class="flex-shrink-0">
+      <div class="container">
+
+        <h1 class="mt-5"><%= error.status %></h1>
+        
+        <!-- aggiungere altri campi di dettaglio per utente -->
+
+        <p class="lead">message</p>
+        <pre><%= error.stack %></pre>
+
+        <p>Use <a href="/signin">Go to Sign In</a></p>
+      
+      </div>
+    </main>
+
+    <% include include/footer.ejs %>
+    
+  </body>
+</html>
+

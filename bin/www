@@ -4,9 +4,10 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('clementineos-auth:server');
-var http = require('http');
+var app           = require('../app');
+var debug         = require('debug')('clementineos-auth:server');
+var http          = require('http');
+var log           = require('logbootstrap');
 
 /**
  * Get port from environment and store in Express.
@@ -65,11 +66,15 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      var msg = bind + ' requires elevated privileges';
+      console.error(msg);
+      log('error', msg);
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      var msg = bind + ' is already in use';
+      console.error(msg);
+      log('error', msg);
       process.exit(1);
       break;
     default:
@@ -82,9 +87,16 @@ function onError(error) {
  */
 
 function onListening() {
+  
   var addr = server.address();
+
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+
+  var msg = 'Listening on ' + bind;
+  debug(msg);
+  log('info', 'IP -> http://localhost:' + port);
+  log('info', msg);
+
 }

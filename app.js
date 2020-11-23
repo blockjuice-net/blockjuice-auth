@@ -3,10 +3,11 @@ var express       = require('express');
 var path          = require('path');
 var cookieParser  = require('cookie-parser');
 var logger        = require('morgan');
-var log           = require('logbootstrap');
 
 var indexRouter   = require('./routes/index');
 var usersRouter   = require('./routes/users');
+
+var cors          = require('cors')
 
 var dotenv        = require('dotenv');
 var firebase      = require('./firebase');
@@ -54,9 +55,12 @@ app.use(express.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(cors());
+
 // --------------------------------------------
 app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist'));
 app.use('/bootstrap-icons', express.static(__dirname + '/node_modules/bootstrap-icons'));
+app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use('/socket', express.static(__dirname + '/node_modules/socket.io-client/dist'));
 app.use('/moment', express.static(__dirname + '/node_modules/moment'));
@@ -81,7 +85,9 @@ app.use((err, req, res, next) => {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', { 
+    title: process.env.TITLE
+  });
 });
 
 module.exports = app;

@@ -5,16 +5,33 @@ const log   = require('logbootstrap');
 var dotenv  = require('dotenv');
 dotenv.config();
 
+var typeform;
+var form;
 
-router.get('/', (req, res, next) => {
+router.param('login', function (req, res, next, login) {
   
-  // let message = 'Start login flow using /login route. Try it like this: {http://yourserver:port}/login/facebook';
-  // return res.status(200).send(message);
-  log('info', 'API HOME ...');
-  
-  res.render('index', { 
-    title: '_clementineOS' 
+  form = login;
+
+  if (login == 'signin') {
+    typeform = 'Sign In';
+  } else if (login == 'signup') {
+    typeform = 'Sign Up';
+  };
+
+  log('info', 'Start Form: ' + typeform);
+
+  next();
+})
+
+router.get('/:login', (req, res, next) => {
+
+  res.render(form, { 
+    title: process.env.TITLE,
+    typeform: typeform,
+    error: '',
+    message: ''
   });
+
 });
 
 module.exports = router;
