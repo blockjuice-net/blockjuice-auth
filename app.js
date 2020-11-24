@@ -24,7 +24,9 @@ const {
   FIREBASE_STORAGEBUCKET,
   FIREBASE_MESSAGESENDERID,
   FIREBASE_APP_ID,
-  FIREBASE_MEASUREMENTID 
+  FIREBASE_MEASUREMENTID,
+  FIREBASE_ADMIN_PATH,
+  FIREBASE_ADMIN_DBURL
 } = process.env;
 
 // For Firebase JavaScript SDK v7.20.0 and later, `measurementId` is an optional field
@@ -37,7 +39,9 @@ const firebaseConfig = {
   storageBucket: FIREBASE_STORAGEBUCKET,
   messagingSenderId: FIREBASE_MESSAGESENDERID,
   appId: FIREBASE_APP_ID,
-  measurementId: FIREBASE_MEASUREMENTID
+  measurementId: FIREBASE_MEASUREMENTID,
+  admin_path: FIREBASE_ADMIN_PATH,
+  admin_databaseURL: FIREBASE_ADMIN_DBURL
 };
 
 firebase.init(firebaseConfig);

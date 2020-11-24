@@ -14,7 +14,7 @@ var schema = new passwordValidator();
 // Add properties to it
 schema
 .is().min(8)                                                  // Minimum length 8
-.is().max(100)                                                // Maximum length 100
+.is().max(20)                                                 // Maximum length 100
 .has().uppercase()                                            // Must have uppercase letters
 .has().lowercase()                                            // Must have lowercase letters
 .has().digits(2)                                              // Must have at least 2 digits
@@ -39,38 +39,6 @@ router.get('/keys', (req, res, next) => {
   var keys = req.app.locals.firebase.createKeys();
   log('info', 'Keys: ' + JSON.stringify(keys));
   res.json(keys);
-});
-
-router.get('/forgotpassword', (req, res, next) => {
- 
-  res.render('forgotpassword', { 
-    title: process.env.TITLE,
-    typeform: 'Reset Password',
-    error: '',
-    message: ''
-  });
-
-});
-
-router.post('/newpassword', (req, res, next) => {
-
-  // console.log('Body: ' + req.body);
-
-  /*
-  var pwd = req.body.password;
-
-  req.app.locals.firebase.getUser(email, (error, user) => {
-        
-    if (error != null) {
-      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-      renderError(res, 'signin', req.app.locals.firebase.getError(error));
-    } else {
-      
-    }
-
-  });
-  */
-
 });
 
 router.post('/resetpassword', (req, res, next) => {

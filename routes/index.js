@@ -34,4 +34,26 @@ router.get('/:login', (req, res, next) => {
 
 });
 
+router.get('/profile/:uid', (req, res, next) => {
+
+  var uid = req.params.uid 
+
+  res.render('profile', { 
+    title: process.env.TITLE,
+    uid: uid
+  });
+
+});
+
+router.get('/forgotpassword', (req, res, next) => {
+ 
+  res.render('forgotpassword', { 
+    title: process.env.TITLE,
+    typeform: 'Reset Password',
+    error: '',
+    message: ''
+  });
+
+});
+
 module.exports = router;

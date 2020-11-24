@@ -1,10 +1,11 @@
 <% if (error != '') { %>
-    <div class="alert alert-warning" role="alert">
-        <%= error %>
-    </div>
-    <% if (typeform == 'Sign In') { %>
-      please try <a href="/signup" class="badge badge-info"> Sign Up </a>
-    <% } else if (typeform == 'Sign Up' || typeform == 'Reset Password') { %>
-      please try <a href="/signin" class="badge badge-info"> Sign In </a>
-    <% } %>
+  <hr />
+  <div class="alert alert-warning" role="alert">
+      <%= error %>
+  </div>
+  <% if (typeform == 'Sign In') { %>
+    please try <a href="/signup" class="badge badge-info"> Sign Up </a>
+  <% } else if (typeform == 'Sign Up' || typeform == 'Reset Password') { %>
+    please try <a href="/signin" class="badge badge-info"> Sign In </a>
   <% } %>
+<% } %>
