@@ -1,14 +1,15 @@
 // Firebase App (the core Firebase SDK) is always required and
 // must be listed before other Firebase SDKs
-var firebase  = require("firebase/app");
+var firebase  = require('firebase/app');
 const admin = require('firebase-admin');
 
 // Add the Firebase products that you want to use
 require("firebase/auth");
 require("firebase/firestore");
+const config = require("./firebase-config.js");
+const serviceKey = require("./keys/serviceAccountKey.json")
 
 const dotenv  = require('dotenv');
-
 dotenv.config();
 
 var google = new firebase.auth.GoogleAuthProvider();
@@ -73,18 +74,6 @@ let getToken = (data) => {
 // ---------------------------------------------------------------------------
 // Administration Users
 
-
-let adminInit = (path, databaseURL) => {
-
-  var serviceAccount = require(path);
-
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: databaseURL
-  });
-
-};
-
 let getUserInfo = (uid, callback) => {
 
   admin.auth().getUser(uid).then(user => {
@@ -122,12 +111,17 @@ let updateUserbyID = (uid, data, callback) => {
 
 };
 
-
 // ---------------------------------------------------------------------------
 // Initialize Firebase
-let init = (config) => {
-  firebase.initializeApp(config);
-  adminInit(config.admin_path, config.admin_databaseURL);
+let init = () => {
+
+  firebase.initializeApp(config.config);
+
+  admin.initializeApp({
+    credential: serviceKey,
+    databaseURL: config.FIREBASE_ADMIN_DBURL
+  });
+
 };
 
 // signin with email and password
