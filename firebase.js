@@ -7,7 +7,7 @@ const admin = require('firebase-admin');
 require("firebase/auth");
 require("firebase/firestore");
 const config = require("./firebase-config.js");
-const serviceKey = require("./keys/serviceAccountKey.json")
+const serviceKey = require('./keys/serviceAccountKey.json')
 
 const dotenv  = require('dotenv');
 dotenv.config();

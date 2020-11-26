@@ -2,9 +2,18 @@ var express   = require('express');
 var router    = express.Router();
 const log     = require('logbootstrap');
 
+var nJwt = require('njwt');
+var secureRandom = require('secure-random');
+
 var dotenv  = require('dotenv');
 const { indexOf } = require('lodash');
 dotenv.config();
+
+const FIREBASE_EMAIL_VERIFY = 'http://localhost:' + process.env.PORT + '/auth/check';
+const FIREBASE_RESET_PWD = 'http://localhost:' + process.env.PORT + '/signin';
+
+var firebase;
+var firebase_admin;
 
 // -------------------------------------------------------------------------------
 var passwordValidator = require('password-validator');
@@ -26,6 +35,12 @@ schema
   'Password!'
 ]);  // Blacklist these values
 // -------------------------------------------------------------------------------
+
+router.use(function (req, res, next) {
+  firebase_admin = req.app.locals.firebase_admin;
+  firebase = req.app.locals.firebase;
+  next();
+});
 
 router.post('/password', (req, res, next) => {
   var pwd = req.body.password;
@@ -50,23 +65,18 @@ router.post('/profile', (req, res, next) => {
       displayName: displayname
   };
 
-  req.app.locals.firebase.updateUserbyID(uid, data, (error, user) => {
+  firebase_admin.auth().updateUser(uid, data).then(user => {
     
-    if (error == null) {
-
-      log('success','UPDATED User: ' + JSON.stringify(user));
+    log('success','UPDATED User: ' + JSON.stringify(user.toJSON()));
       
-      res.render('dashboard', { 
-        title: process.env.TITLE,
-        user: user
-      });
+    res.render('dashboard', { 
+      title: process.env.TITLE,
+      user: user.toJSON()
+    });
 
-    } else {
-      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-      renderError(res, 'signin', req.app.locals.firebase.getError(error));
-    }
-
-  })
+  }).catch(error => {
+    renderError(res, 'signin', error);
+  });
   
 });
 
@@ -77,34 +87,29 @@ router.post('/resetpassword', (req, res, next) => {
   console.log('Body ' +  JSON.stringify(req.body));
 
   var options = {
-    url: process.env.FIREBASE_RESET_PWD,
+    url: FIREBASE_RESET_PWD,
     handleCodeInApp: true
   };
 
-  req.app.locals.firebase.passwordReset(email, options, error => {
+  firebase.auth().sendPasswordResetEmail(email, options).then(() => {
     
-    if (error != null) {
-      
-      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-      renderError(res, 'signin', req.app.locals.firebase.getError(error));
+    log('success','Reset Password OK');
 
-    } else {
-      log('success','Reset Password OK');
+    res.render('checkemail', { 
+      title: process.env.TITLE,
+      message: 'Please check your email and click link to reset your password ...'
+    });
 
-      res.render('checkemail', { 
-        title: process.env.TITLE,
-        message: 'Please check your email and click link to reset your password ...'
-      });
-
-    }
-  })
+  }).catch(error => {
+    renderError(res, 'signin', error);
+  });
 
 });
 
 router.post('/token', (req, res, next) => {
 
   var payload = req.body.payload;
-  var token = req.app.locals.firebase.getToken(payload);
+  var token = getToken(payload);
   log('info', 'Token: ' + JSON.stringify(payload))
   res.json(token);
   
@@ -129,20 +134,18 @@ router.get('/check', (req, res, next) => {
               '\oobCode' + oobCode +
               '\omode' + mode + 
               '\olang' + lang);
-
-  req.app.locals.firebase.checkMail(email, url, (error, user) => {
-    if (error != null) {
-      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-      renderError(res, 'signup', req.app.locals.firebase.getError(error));
-    } else {
-      log('success','CHECKED EMAIL User: ' + JSON.stringify(user));
+  
+  firebase.auth().signInWithEmailLink(email, url).then(result => {
+    
+    log('success','CHECKED EMAIL User: ' + JSON.stringify(user));
       
-      res.render('dashboard', { 
-        title: process.env.TITLE,
-        user: user
-      });
+    res.render('dashboard', { 
+      title: process.env.TITLE,
+      user: result.user
+    });
 
-    }
+  }).catch(error => {
+    renderError(res, 'signup', error);
   });
 
 });
@@ -152,20 +155,15 @@ router.post('/signin', (req, res, next) => {
   
   var email = req.body.email;
   var password = req.body.password;
-  
-  req.app.locals.firebase.signIn(email, password, (error, user) => {
 
-    if (error != null) {
-      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-      renderError(res, 'signin', req.app.locals.firebase.getError(error));
-    } else {
-      log('success','User: ' + JSON.stringify(user));
-      res.render('dashboard', { 
-        title: process.env.TITLE,
-        user: user
-      });
-    }
-         
+  firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
+    log('success','User: ' + JSON.stringify(user));
+    res.render('dashboard', { 
+      title: process.env.TITLE,
+      user: result.user
+    });
+  }).catch(error => {
+    renderError(res, 'signin', error);
   });
 
 });
@@ -176,33 +174,27 @@ router.post('/signup', (req, res, next) => {
   var email = req.body.email;
   var password = req.body.password;
 
-  req.app.locals.firebase.signUp(email, password, (error, user) => {
-
-    if (error != null) {
-      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-      renderError(res, 'signup', req.app.locals.firebase.getError(error));
-    } else {
-
-      var options = {
-        url: process.env.FIREBASE_EMAIL_VERIFY + '?email=' + email,
-        handleCodeInApp: true
-      };
+  firebase.auth().createUserWithEmailAndPassword(email, password).then(result => {
     
-      log('info', 'Options: ' + JSON.stringify(options));
-    
-      req.app.locals.firebase.verifyMail(email, options, error => {
-        if (error != null) {
-          log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-          renderError(res, 'signup', req.app.locals.firebase.getError(error));
-        } else {
-          res.render('checkemail', { 
-            title: process.env.TITLE,
-            message: 'Please check your email and click link to verify your account ...'
-          });
-        }
+    var options = {
+      url: FIREBASE_EMAIL_VERIFY + '?email=' + email,
+      handleCodeInApp: true
+    };
+  
+    firebase.auth().sendSignInLinkToEmail(email, options).then(() => {
+      
+      // Verification email sent.
+      res.render('checkemail', { 
+        title: process.env.TITLE,
+        message: 'Please check your email and click link to verify your account ...'
       });
-    }
-         
+
+    }).catch(error => {
+      renderError(res, 'signup', error);
+    });
+
+  }).catch(error => {
+    renderError(res, 'signup', error);
   });
 
 });
@@ -211,6 +203,8 @@ let renderError = (res, view, error) => {
 
   var t;
 
+  log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
+    
   if (view == 'signup') {
     t = 'Sign Up';
   } else if (view == 'signin') {
@@ -220,10 +214,47 @@ let renderError = (res, view, error) => {
   res.render(view, { 
     title: process.env.TITLE,
     typeform: t,
-    error: error,
+    error: parseFirebaseError(error),
     message: ''
   });
 
-}
+};
+
+// ----------------------------------------------------
+// parse error 
+let parseFirebaseError = error => {
+  if ((error.errorCode == 'auth/email-already-in-use') || 
+      (error.errorCode == 'auth/invalid-email') || 
+      (error.errorCode == 'auth/operation-not-allowed') ||
+      (error.errorCode == 'auth/weak-password') || 
+      (error.errorCode == 'auth/expired-action-code') || 
+      (error.errorCode == 'auth/invalid-email') || 
+      (error.errorCode == 'auth/user-disabled') ||
+      (error.errorCode == 'auth/user-not-found') ||
+      (error.errorCode == 'auth/missing-android-pkg-name') ||
+      (error.errorCode == 'auth/missing-continue-uri') ||
+      (error.errorCode == 'auth/missing-ios-bundle-id') ||
+      (error.errorCode == 'auth/invalid-continue-uri') ||
+      (error.errorCode == 'auth/unauthorized-continue-uri')) {
+        return error.errorMessage;
+  } else {
+        return 'unidentified error or unknow user';
+  }
+};
+
+// ---------------------------------------------------------------------------
+// Create Key Store for Token
+
+// create token
+let getToken = (data) => {
+  var signingKey = secureRandom(256, {type: 'Buffer'});
+  var jwt = nJwt.create(data, signingKey);
+
+  return {
+    token: jwt,
+    auth: jwt.compact()   
+  };
+
+};
 
 module.exports = router;

@@ -10,8 +10,6 @@ const FIREBASE_MESSAGESENDERID = '366752711003';
 const FIREBASE_APP_ID = '1:366752711003:web:6d355418d6d700ba6e9a7e'; 
 const FIREBASE_MEASUREMENTID = 'G-WS7QDR22XJ'; 
 
-const FIREBASE_EMAIL_VERIFY = 'http://localhost:' + process.env.PORT + '/auth/check';
-const FIREBASE_RESET_PWD = 'http://localhost:' + process.env.PORT + '/signin';
 const FIREBASE_ADMIN_DBURL = 'https://sage-buttress-288414.firebaseio.com';
 
 const config = {
@@ -27,7 +25,5 @@ const config = {
 
 module.exports = {
     config,
-    FIREBASE_EMAIL_VERIFY,
-    FIREBASE_RESET_PWD,
     FIREBASE_ADMIN_DBURL
 };

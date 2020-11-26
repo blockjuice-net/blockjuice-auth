@@ -5,9 +5,6 @@ const log   = require('logbootstrap');
 var dotenv  = require('dotenv');
 dotenv.config();
 
-var typeform;
-var form;
-
 router.get('/signin', (req, res, next) => {
 
   res.render('signin', { 
@@ -54,11 +51,13 @@ router.get('/forgotpassword', (req, res, next) => {
 
 router.get('/logout', (req, res, next) => {
 
-  req.app.locals.firebase.logOut(error => {
-    if (error != null) {
-      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-    }
+  req.app.locals.firebase.auth().signOut().then(() => {
+    // Sign-out successful.
     res.redirect('/signin');
+  }).catch(error => {
+    // An error happened.
+    log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
+
   });
 
 });

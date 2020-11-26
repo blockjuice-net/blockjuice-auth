@@ -1,6 +1,6 @@
 {
   "name": "clementineos-auth",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "node -r esm ./bin/www"
@@ -20,6 +20,7 @@
     "express": "~4.16.1",
     "firebase": "^8.0.1",
     "firebase-admin": "^9.4.1",
+    "firebase-functions": "^3.11.0",
     "firebaseui": "^4.7.1",
     "http-errors": "~1.6.3",
     "jquery": "^3.5.1",
