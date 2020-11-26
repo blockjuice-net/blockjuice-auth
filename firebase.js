@@ -33,7 +33,7 @@ let updateUser = (user, data, callback) => {
 
   user.updateProfile(data).then(() => {
     // Update successful.
-    callback(null, user)
+    callback(null, user.toJSON());
   }).catch((error) => {
     // An error happened.
     callback(error, null);
@@ -114,7 +114,6 @@ let updateUserbyID = (uid, data, callback) => {
 
   admin.auth().updateUser(uid, data).then(user => {
     // See the UserRecord reference doc for the contents of userRecord.
-    console.log('Successfully updated user', userRecord.toJSON());
     callback(null, user.toJSON());
   }).catch(error => {
     callback(error, null);
@@ -152,10 +151,10 @@ let signUp = (email, password, callback) => {
 let logOut = (callback) => {
   firebase.auth().signOut().then(() => {
     // Sign-out successful.
-    callback(false);
+    callback(null);
   }).catch(error => {
     // An error happened.
-    callback(error, null);
+    callback(error);
   });
 };
 

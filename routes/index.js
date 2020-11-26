@@ -8,26 +8,22 @@ dotenv.config();
 var typeform;
 var form;
 
-router.param('login', function (req, res, next, login) {
-  
-  form = login;
+router.get('/signin', (req, res, next) => {
 
-  if (login == 'signin') {
-    typeform = 'Sign In';
-  } else if (login == 'signup') {
-    typeform = 'Sign Up';
-  };
-
-  log('info', 'Start Form: ' + typeform);
-
-  next();
-})
-
-router.get('/:login', (req, res, next) => {
-
-  res.render(form, { 
+  res.render('signin', { 
     title: process.env.TITLE,
-    typeform: typeform,
+    typeform: 'Sign In',
+    error: '',
+    message: ''
+  });
+
+});
+
+router.get('/signup', (req, res, next) => {
+
+  res.render('signup', { 
+    title: process.env.TITLE,
+    typeform: 'Sign Up',
     error: '',
     message: ''
   });
@@ -52,6 +48,17 @@ router.get('/forgotpassword', (req, res, next) => {
     typeform: 'Reset Password',
     error: '',
     message: ''
+  });
+
+});
+
+router.get('/logout', (req, res, next) => {
+
+  req.app.locals.firebase.logOut(error => {
+    if (error != null) {
+      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
+    }
+    res.redirect('/signin');
   });
 
 });

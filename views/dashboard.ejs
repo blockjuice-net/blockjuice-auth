@@ -11,11 +11,12 @@
       <div class="container">
 
         <% if (user.displayName == null) { %>
-          <h1 class="mt-5"><%= user.email %> <span class="badge badge-secondary"><a href="/profile/<%= user.uid %>><i class="far fa-edit"></i></a></span></h1>
+          <h1 class="mt-5"><%= user.email %></h1>
         <% } else { %>
-          <h1 class="mt-5"><%= user.displayName %> <span class="badge badge-secondary"><a href="/profile/<%= user.uid %>><i class="far fa-edit"></i></a></span></h1>
+          <h1 class="mt-5"><%= user.displayName %></h1>
         <% } %>
         <small class="form-text text-muted">Edit your <a href="/profile/<%= user.uid %>">profile <i class="far fa-edit"></i></a></small>
+        <small class="form-text text-muted">Close your dashboars and <a href="/logout">Exit <i class="far fa-sign-out-alt"></i></a></small>
 
         <!-- aggiungere altri campi di dettaglio per utente -->
         <!--

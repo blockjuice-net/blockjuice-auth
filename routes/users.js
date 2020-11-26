@@ -41,6 +41,35 @@ router.get('/keys', (req, res, next) => {
   res.json(keys);
 });
 
+router.post('/profile', (req, res, next) => {
+  
+  var displayname = req.body.displayname;
+  var uid = req.body.uid;
+
+  var data = {
+      displayName: displayname
+  };
+
+  req.app.locals.firebase.updateUserbyID(uid, data, (error, user) => {
+    
+    if (error == null) {
+
+      log('success','UPDATED User: ' + JSON.stringify(user));
+      
+      res.render('dashboard', { 
+        title: process.env.TITLE,
+        user: user
+      });
+
+    } else {
+      log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
+      renderError(res, 'signin', req.app.locals.firebase.getError(error));
+    }
+
+  })
+  
+});
+
 router.post('/resetpassword', (req, res, next) => {
  
   var email = req.body.email;
@@ -174,14 +203,6 @@ router.post('/signup', (req, res, next) => {
       });
     }
          
-  });
-
-});
-
-router.get('/logout', (req, res, next) => {
-
-  req.app.locals.firebase.logOut(error => {
-    res.redirect('/');
   });
 
 });
