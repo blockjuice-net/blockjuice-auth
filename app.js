@@ -5,7 +5,12 @@ var cookieParser  = require('cookie-parser');
 var logger        = require('morgan');
 
 var indexRouter   = require('./routes/index');
-var usersRouter   = require('./routes/users');
+var authRouter    = require('./routes/auth');
+var tokenRouter   = require('./routes/token');
+var pwdRouter     = require('./routes/password');
+var userRouter    = require('./routes/user');
+
+const log     = require('logbootstrap');
 
 var cors          = require('cors')
 
@@ -23,14 +28,15 @@ const firebase_admin = require('firebase-admin');
 require("firebase/auth");
 require("firebase/firestore");
 
-const config = require('./firebase-config.js');
-const serviceKey = require('./serviceAccountKey.json');
+const firebase_config = require('./firebase-config.js');
+const firebase_serviceKey = require('./serviceAccountKey.json');
 
-firebase.initializeApp(config.config);
+log('info', 'connecting firebase ... ');
+firebase.initializeApp(firebase_config);
 
 firebase_admin.initializeApp({
-  credential: firebase_admin.credential.cert(serviceKey),
-  databaseURL: config.FIREBASE_ADMIN_DBURL
+  credential: firebase_admin.credential.cert(firebase_serviceKey),
+  databaseURL: process.env.FIREBASE_ADMIN_DBURL
 });
 
 // -----------------------------------------------------------
@@ -65,8 +71,12 @@ app.use('/lodash', express.static(__dirname + '/node_modules/lodash'));
 app.use('/axios', express.static(__dirname + '/node_modules/axios/dist'));
 app.use('/popperjs', express.static(__dirname + '/node_modules/@popperjs%2fcore/dist/cjs'));
 
+// API Routing
 app.use('/', indexRouter);
-app.use('/auth', usersRouter);
+app.use('/auth', authRouter);
+app.use('/token', tokenRouter);
+app.use('/pwd', pwdRouter);
+app.use('/user', userRouter);
 
 // ---------------------------------------------------
 // catch 404 and forward to error handler

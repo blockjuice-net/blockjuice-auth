@@ -2,82 +2,80 @@ var express   = require('express');
 var router    = express.Router();
 const log     = require('logbootstrap');
 
-var nJwt = require('njwt');
-var secureRandom = require('secure-random');
-
 var dotenv  = require('dotenv');
-const { indexOf } = require('lodash');
 dotenv.config();
+
+var google, facebook, twitter, github, microsoft, apple;
 
 const FIREBASE_EMAIL_VERIFY = 'http://localhost:' + process.env.PORT + '/auth/check';
 const FIREBASE_RESET_PWD = 'http://localhost:' + process.env.PORT + '/signin';
 
 var firebase;
-var firebase_admin;
-
-// -------------------------------------------------------------------------------
-var passwordValidator = require('password-validator');
-// Create a schema
-var schema = new passwordValidator();
-
-// Add properties to it
-schema
-.is().min(8)                                                  // Minimum length 8
-.is().max(20)                                                 // Maximum length 100
-.has().uppercase()                                            // Must have uppercase letters
-.has().lowercase()                                            // Must have lowercase letters
-.has().digits(2)                                              // Must have at least 2 digits
-.has().symbols(1)                                              // Must have simbols
-.has().not().spaces()                                         // Should not have spaces
-.is().not().oneOf([
-  'Passw0rd', 
-  'Password123', 
-  'Password!'
-]);  // Blacklist these values
-// -------------------------------------------------------------------------------
 
 router.use(function (req, res, next) {
-  firebase_admin = req.app.locals.firebase_admin;
   firebase = req.app.locals.firebase;
+
+  google = new firebase.auth.GoogleAuthProvider();
+  facebook = new firebase.auth.FacebookAuthProvider();
+  twitter = new firebase.auth.TwitterAuthProvider();
+  github = new firebase.auth.GithubAuthProvider();
+  microsoft = new firebase.auth.OAuthProvider('microsoft.com');
+  apple = new firebase.auth.OAuthProvider('apple.com');
+
   next();
 });
 
-router.post('/password', (req, res, next) => {
-  var pwd = req.body.password;
-  log('info', 'Password receveid to check: ' + pwd);
-  var isValid = schema.validate(pwd);
-  log('info', 'Password receveid valid: ' + isValid);
-  res.send(isValid);
-});
+router.get('/provider/:provider', (req, res, next) => {
 
-router.get('/keys', (req, res, next) => {
-  var keys = req.app.locals.firebase.createKeys();
-  log('info', 'Keys: ' + JSON.stringify(keys));
-  res.json(keys);
-});
+  var providerParam = req.params.provider;
+  var provider;
 
-router.post('/profile', (req, res, next) => {
-  
-  var displayname = req.body.displayname;
-  var uid = req.body.uid;
+  if (providerParam == 'google') {
+    provider = google;
+  } else if (providerParam == 'facebook') {
+    provider = facebook;
+  } else if (providerParam == 'twitter') {
+    provider = twitter;
+  } else if (providerParam == 'github') {
+    provider = github;
+  } else if (providerParam == 'microsoft') {
+    provider = microsoft;
+  } else if (providerParam == 'apple') {
+    provider = apple;
+  }
 
-  var data = {
-      displayName: displayname
-  };
+  firebase.auth().signInWithPopup(provider).then(result => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    var token = result.credential.accessToken;
+    // The signed-in user info.
+    var user = result.user;
 
-  firebase_admin.auth().updateUser(uid, data).then(user => {
-    
-    log('success','UPDATED User: ' + JSON.stringify(user.toJSON()));
-      
-    res.render('dashboard', { 
-      title: process.env.TITLE,
-      user: user.toJSON()
-    });
+    log('info', 'Provider ' + provider);
+    log('info', 'User info: ' + JSON.stringify(result.user));
 
-  }).catch(error => {
-    renderError(res, 'signin', error);
+    res.redirect('/user/profile/' + result.user.uid);
+
+    // ...
+  }).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // The email of the user's account used.
+    var email = error.email;
+    // The firebase.auth.AuthCredential type that was used.
+    var credential = error.credential;
+
+    var errorMsg = errorCode + '\n' +
+                   errorMessage + '\n' + 
+                   email + '\n' +
+                   credential;
+
+    log('error', 'Error: ' + errorMsg);
+
+    renderError(res, 'signup', errorMsg);
+
   });
-  
+
 });
 
 router.post('/resetpassword', (req, res, next) => {
@@ -101,18 +99,9 @@ router.post('/resetpassword', (req, res, next) => {
     });
 
   }).catch(error => {
-    renderError(res, 'signin', error);
+    renderError(res, 'signin', parseFirebaseError(error));
   });
 
-});
-
-router.post('/token', (req, res, next) => {
-
-  var payload = req.body.payload;
-  var token = getToken(payload);
-  log('info', 'Token: ' + JSON.stringify(payload))
-  res.json(token);
-  
 });
 
 // Check email link
@@ -136,16 +125,10 @@ router.get('/check', (req, res, next) => {
               '\olang' + lang);
   
   firebase.auth().signInWithEmailLink(email, url).then(result => {
-    
-    log('success','CHECKED EMAIL User: ' + JSON.stringify(user));
-      
-    res.render('dashboard', { 
-      title: process.env.TITLE,
-      user: result.user
-    });
-
+    log('success', '/check OK');
+    res.redirect('/user/profile/' + result.user.uid);
   }).catch(error => {
-    renderError(res, 'signup', error);
+    renderError(res, 'signup', parseFirebaseError(error));
   });
 
 });
@@ -157,13 +140,10 @@ router.post('/signin', (req, res, next) => {
   var password = req.body.password;
 
   firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
-    log('success','User: ' + JSON.stringify(user));
-    res.render('dashboard', { 
-      title: process.env.TITLE,
-      user: result.user
-    });
+    log('success', '/signin OK');
+    res.redirect('/user/profile/' + result.user.uid);
   }).catch(error => {
-    renderError(res, 'signin', error);
+    renderError(res, 'signin', parseFirebaseError(error));
   });
 
 });
@@ -180,10 +160,11 @@ router.post('/signup', (req, res, next) => {
       url: FIREBASE_EMAIL_VERIFY + '?email=' + email,
       handleCodeInApp: true
     };
+
+    log('success', '/signup OK');
   
     firebase.auth().sendSignInLinkToEmail(email, options).then(() => {
-      
-      // Verification email sent.
+      log('success', '... send link to email OK');
       res.render('checkemail', { 
         title: process.env.TITLE,
         message: 'Please check your email and click link to verify your account ...'
@@ -194,10 +175,12 @@ router.post('/signup', (req, res, next) => {
     });
 
   }).catch(error => {
-    renderError(res, 'signup', error);
+    renderError(res, 'signup', parseFirebaseError(error));
   });
 
 });
+
+// ----------------------------------------------------
 
 let renderError = (res, view, error) => {
 
@@ -220,7 +203,6 @@ let renderError = (res, view, error) => {
 
 };
 
-// ----------------------------------------------------
 // parse error 
 let parseFirebaseError = error => {
   if ((error.errorCode == 'auth/email-already-in-use') || 
@@ -240,21 +222,6 @@ let parseFirebaseError = error => {
   } else {
         return 'unidentified error or unknow user';
   }
-};
-
-// ---------------------------------------------------------------------------
-// Create Key Store for Token
-
-// create token
-let getToken = (data) => {
-  var signingKey = secureRandom(256, {type: 'Buffer'});
-  var jwt = nJwt.create(data, signingKey);
-
-  return {
-    token: jwt,
-    auth: jwt.compact()   
-  };
-
 };
 
 module.exports = router;

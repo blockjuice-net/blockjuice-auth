@@ -2,64 +2,43 @@
 
   'use strict'
 
-  // var socket = io();
+  $('#msg_profile').hide();
 
-  var dashboard_vue = new Vue({
-    
-    el: '#dashboard',
+  let viewAlert = (msg, error) => {
+    console.log('Msg: ' + msg);
 
-    data() {
-      return { 
-        headers: ['block', 'timestamp', 'producer', 'id', 'confirmed'],
-        blocks: [],
-        limit: 20,
-        interval: 3000,
-        lastBlock: 0,
-        error: ''
-      }
-    },
-    computed: {
+    $('#msg_profile').show();
+    if (error) {
+      $('#msg_profile').css("badge badge-danger");
+    } else {
+      $('#msg_profile').css("badge badge-success");
+    };
 
-      lastBlocks() {
-
-        if (_.size(this.blocks) > this.limit) {
-          return _.takeRight(this.blocks, this.limit)
-        } else {
-          return this.blocks;
-        }
-
-      }
-
-    },
-
-    methods: {
-      formatDate(date) {
-        return moment(date).format('DD/MM/YYYY HH:mm:ss');
-      }
-    }
-  });
-
-  socket.on('error', (error) => {
-    dashboard_vue.error = error;
-  });
-
-  /*
-  function loadBlock () {
-    console.log('emit socket client loadblock...');
-    socket.emit('loadblock', dashboard_vue.lastBlock);
+    $('#msg_profile').html(msg);
   };
 
-  socket.on('block', (block) => {
-    // if (typeof block.block_num != 'undefined' || block.block_num != '') {
-      dashboard_vue.lastBlock = block.block_num;
-      dashboard_vue.blocks.push(block);
-    // };
+  let updateProfile = (data) => {
+
+    axios.post('/user/update', data).then(response => {
+      viewAlert('Updated display name succefully.', false);
+      console.log('Response: ' + JSON.stringify(response.data));
+      $('#updateModal').modal('toggle');
+      window.location.href = ("/user/profile/" + response.data.uid);
+    }).catch(error => {
+      viewAlert(error.errorMessage, true)
+    });
+  };
+
+  $('#updateProfile').on('click', function () {
+    
+    var data = {
+      displayname: $('#username').val(),
+      uid: $('#uid').val()
+    };
+
+    console.log('update -> ' + JSON.stringify(data));
+
+    updateProfile(data);
   });
-
-  loadBlock();
-
-  var mSocket = setInterval(loadBlock, 3000);
-  */
-
 
 }())

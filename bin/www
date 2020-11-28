@@ -9,6 +9,9 @@ var debug         = require('debug')('clementineos-auth:server');
 var http          = require('http');
 var log           = require('logbootstrap');
 
+var dotenv      = require('dotenv');
+dotenv.config();
+
 /**
  * Get port from environment and store in Express.
  */
@@ -99,4 +102,4 @@ function onListening() {
   log('info', 'IP -> http://localhost:' + port);
   log('info', msg);
 
-}
+};
