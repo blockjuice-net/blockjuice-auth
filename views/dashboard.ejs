@@ -1,68 +1,41 @@
 <!doctype html>
-<html lang="en" class="h-100">
-  <head>
-    <% include include/head.ejs %>
-    <link rel="stylesheet" href="css/dashboard-light.css">
-  </head>
+<html lang="en">
 
-  <body class="d-flex flex-column h-100">
-    <!-- Begin page content -->
-    <main role="main" class="flex-shrink-0">
-      <div class="container">
+<head>
+  <% include include/head.ejs %>
+  <link rel="stylesheet" href="/css/dashboard-light.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
 
-        <% if (user.displayName == null) { %>
-          <h1 class="mt-5"><%= user.email %></h1>
-        <% } else { %>
-          <h1 class="mt-5"><%= user.displayName %></h1>
-        <% } %>
-        <small class="form-text text-muted">Edit your <a href="#" data-toggle="modal" data-target="#updateModal">profile <i class="far fa-edit"></i></a></small>
-        <small class="form-text text-muted">Close your dashboard and <a href="/logout">Exit <i class="fas fa-times-circle"></i></a></small>
-        <!-- aggiungere altri campi di dettaglio per utente -->
-        <!--
-        <p class="lead">Pin a footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS.</p>
-        <p>Use <a href="../examples/sticky-footer-navbar/">the sticky footer with a fixed navbar</a> if need be, too.</p>
-        -->
-      
-      </div>
-    </main>
+<body>
+  <% include include/dashboard_nav.ejs %>
 
-    <!-- Modal Update profile -->
+  <div class="container-fluid">
+    <div class="row">
 
-    <div class="modal" tabindex="-1" id="updateModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Update your profile</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
+      <% include include/dashboard_sidebar.ejs %>
 
-          <div class="modal-body">
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
 
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">@</span>
-              </div>
-              <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" id="username">
-              <input type="text" class="form-control" id="uid" value="<%= uid %>" hidden>
-              
-            </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Dashboard 
 
-            <span id="msg_profile"></span>
+            <% if (user.displayName) { %>
+              @<%= user.displayName %>
+            <% } else { %>
+              <%= user.mail %>
+            <% } %>
 
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary" id="updateProfile">Save changes</button>
-          </div>
+          </h1>
+          
+          
         </div>
-      </div>
+        
+      </main>
     </div>
+  </div>
 
-    <% include include/footer.ejs %>
-    <% include include/scripts.ejs %>
-    <script src="/js/dashboard.js"></script>
-    
-  </body>
+  <% include include/scripts.ejs %>
+  
+</body>
 </html>

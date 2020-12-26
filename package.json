@@ -1,6 +1,6 @@
 {
-  "name": "clementineos-auth",
-  "version": "0.0.3",
+  "name": "blockjuice-auth",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "start": "node -r esm ./bin/www"

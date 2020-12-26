@@ -10,17 +10,18 @@
     <form class="form-signin" method="POST" action="/auth/signin">
 
       <% include include/head_sign.ejs %>
-      
-      <label for="inputEmail" class="sr-only">Email</label>
-      <input type="email" id="inputEmail" class="form-control" name="email" placeholder="Email" required autofocus>
-      
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
-      <small id="passwordHelpBlock" class="form-text text-muted">
-        Your password must be 8-20 characters long, contain letters, numbers and special characters, and must not contain spaces, or emoji.
-      </small>
-      
-      <a href="/forgotpassword" class="badge badge-light"> Forgot Password ? </a>
+
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="inputEmail" name="email" placeholder="eMail address to login" required autofocus>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
+        <a href="/forgotpassword" class="badge badge-light">
+          <!-- testare il reset della password -->
+          <small id="forgotpwd" class="form-text text-muted">Forgot password?</small>
+        </a>
+      </div>
       
       <button class="btn btn-lg btn-primary btn-block" type="submit"><%= typeform %></button>
       

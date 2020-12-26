@@ -3,48 +3,36 @@ var express       = require('express');
 var path          = require('path');
 var cookieParser  = require('cookie-parser');
 var logger        = require('morgan');
+const log         = require('logbootstrap');
+var cors          = require('cors')
 
+var dotenv        = require('dotenv');
+dotenv.config();
+
+// Routes
 var indexRouter   = require('./routes/index');
 var authRouter    = require('./routes/auth');
 var tokenRouter   = require('./routes/token');
 var pwdRouter     = require('./routes/password');
 var userRouter    = require('./routes/user');
 
-const log     = require('logbootstrap');
-
-var cors          = require('cors')
-
-var dotenv        = require('dotenv');
-dotenv.config();
+var app = express();
 
 // -----------------------------------------------------------
 // FIREBASE Configuration
 
 // Firebase App (the core Firebase SDK) is always required and
 // must be listed before other Firebase SDKs
-var firebase  = require('firebase/app');
-const firebase_admin = require('firebase-admin');
+const firebase  = require('./firebase');
+const firebase_config = require("./firebase-config.js");
+const firebase_serviceKey = require('./serviceAccountKey.json')
 
-require("firebase/auth");
-require("firebase/firestore");
+firebase.init(firebase_config, firebase_serviceKey);
 
-const firebase_config = require('./firebase-config.js');
-const firebase_serviceKey = require('./serviceAccountKey.json');
-
-log('info', 'connecting firebase ... ');
-firebase.initializeApp(firebase_config);
-
-firebase_admin.initializeApp({
-  credential: firebase_admin.credential.cert(firebase_serviceKey),
-  databaseURL: process.env.FIREBASE_ADMIN_DBURL
-});
+app.locals.firebase = firebase.firebase;
+app.locals.firebase_admin = firebase.firebase_admin;
 
 // -----------------------------------------------------------
-
-var app = express();
-
-app.locals.firebase = firebase;
-app.locals.firebase_admin = firebase_admin;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

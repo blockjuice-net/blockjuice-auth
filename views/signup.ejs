@@ -8,21 +8,25 @@
 
   <body class="text-center">
 
-    <form class="form-signin" method="POST" action="/auth/signup">
+    <form  class="form-signin" method="POST" action="/auth/signup">
     
       <% include include/head_sign.ejs %>
-      
-      <label for="inputEmail" class="sr-only">Email</label>
-      <input type="email" id="inputEmail" class="form-control" name="email" placeholder="Email" required autofocus>
-      
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=/^\S*$/)(?=/^[A-Za-z0-9\!\@\#\$\%\^\&\*\)\(+\=\._-]+$/g).{8,100}" required>
-      <small id="passwordHelpBlock" class="form-text text-muted">
+
+      <input type="email" class="form-control is-invalid" id="inputEmail" name="email" placeholder="eMail Address" aria-label="eMail" required autofocus>
+      <div class="invalid-feedback" id="validEmail">
+        Input a valid email address.
+      </div>
+    
+      <input type="password" id="inputPassword" name="password" class="form-control is-invalid" placeholder="Password" aria-label="Password" required>
+      <div id="validPwd" class="invalid-feedback">
         Your password must be 8-20 characters long, contain letters, numbers and special characters, and must not contain spaces, or emoji.
-      </small>
-
-      <% include include/password_check.ejs %>
-
+      </div>
+    
+      <input type="password" id="inputPasswordCompare" name="passwordCompare" class="form-control is-invalid" placeholder="Re-Type Password" aria-label="Re-Type Password" required>
+      <div id="validPwdCompare" class="invalid-feedback">
+        passwords are not the same.
+      </div>
+      
       <button class="btn btn-lg btn-primary btn-block" type="submit" id="sign_btn"><%= typeform %></button>
       
       <% include include/message_sign.ejs %>
@@ -37,7 +41,7 @@
 
     <% include include/scripts.ejs %>
 
-    <% include include/password_validate.ejs %>
+    <script src="/js/signup.js"></script>
 
   </body>
 </html>

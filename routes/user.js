@@ -7,52 +7,138 @@ var io = require('../bin/www');
 var dotenv  = require('dotenv');
 dotenv.config();
 
-var firebase_admin;
+var admin;
 
 router.use(function (req, res, next) {
-  firebase_admin = req.app.locals.firebase_admin;
+  admin = req.app.locals.firebase_admin.auth();
   next();
+});
+
+router.post('/check/displayName', (req, res, next) => {
+  var name = req.body.displayName;
+
+  res.send(checkDuplicateName(name));
+  
+});
+
+router.post('/check/phoneNumber', (req, res, next) => {
+  var phoneNumber = req.body.phoneNumber;
+  res.send(checkDuplicatePhoneNumber(phoneNumber));
 });
 
 router.post('/update', (req, res, next) => {
   
-  var displayname = req.body.displayname;
+  var displayName = req.body.displayName;
+  var phoneNumber = req.body.phoneNumber;
   var uid = req.body.uid;
 
   var data = {
-      displayName: displayname
+      displayName: displayName,
+      phoneNumber: phoneNumber
   };
 
-  firebase_admin.auth().updateUser(uid, data).then(user => {
+  admin.updateUser(uid, data).then(user => {
     log('success','UPDATED User: ' + JSON.stringify(user.toJSON()));
-    res.status(200).json(user.toJSON());
+    res.redirect('/user/dashboard/' + uid);
   }).catch(error => {
-    res.status(400).json(JSON.stringify(error));
+    res.render('error', { 
+      title: process.env.TITLE,
+      error: error
+    });
   });
   
+});
+
+router.get('/dashboard/:uid', (req, res, next) => {
+
+  var uid = req.params.uid;
+
+  getUser(uid, (error, user) => {
+    if (error != null) {
+      res.render('error', { 
+        title: process.env.TITLE,
+        error: error
+      });
+    } else {
+      res.render('dashboard', { 
+        title: process.env.TITLE,
+        user: user,
+        uid: user.uid
+      });
+    }
+
+  });
+
 });
 
 router.get('/profile/:uid', (req, res, next) => {
 
   var uid = req.params.uid;
 
-  firebase_admin.auth().getUser(uid).then(user => {
+  getUser(uid, (error, user) => {
+    if (error != null) {
+      res.render('error', { 
+        title: process.env.TITLE,
+        error: error
+      });
+    } else {
+      res.render('profile', { 
+        title: process.env.TITLE,
+        user: user,
+        uid: user.uid
+      });
+    }
 
-    res.render('dashboard', { 
-      title: process.env.TITLE,
-      user: user,
-      uid: user.uid
-    });
-    
-  }).catch(error => {
-
-    res.render('error', { 
-      title: process.env.TITLE,
-      error: error
-    });
-    
   });
 
 });
+
+// --------------------------------------------------------------------------------------------
+
+let getUser = (uid, callback) => {
+
+  admin.getUser(uid).then(user => {
+    callback(null, user)
+  }).catch(error => {
+    callback(error, null);
+  });
+
+};
+
+const checkDuplicateName = (name, nextPageToken) => {
+  // List batch of users, 1000 at a time.
+
+  admin.listUsers(1000, nextPageToken).then((listUsersResult) => {
+      
+    listUsersResult.users.forEach((userRecord) => {
+        log('info', 'check if ' + userRecord.toJSON().displayName + ' == ' + name);
+        if (userRecord.toJSON().displayName == name) {
+          log('info', 'user found');
+          return true;
+        }
+      });
+
+      if (listUsersResult.pageToken) {
+        // List next batch of users.
+        checkDuplicateName(name, listUsersResult.pageToken);
+      } else {
+        return false
+      }
+
+    }).catch((error) => {
+      console.log('Error listing users:', error);
+    });
+};
+
+const checkDuplicatePhoneNumber = (phoneNumber) => {
+
+  admin.getUserByPhoneNumber(phoneNumber).then((userRecord) => {
+    return true;
+  }).catch((error) => {
+    console.log('Error fetching user data:', error);
+    return false;
+  });
+
+}
 
 module.exports = router;

@@ -1,191 +1,24 @@
 // Firebase App (the core Firebase SDK) is always required and
 // must be listed before other Firebase SDKs
-var firebase  = require('firebase/app');
-const admin = require('firebase-admin');
+const firebase  = require('firebase/app');
+const firebase_admin = require('firebase-admin');
 
 // Add the Firebase products that you want to use
 require("firebase/auth");
 require("firebase/firestore");
-const config = require("./firebase-config.js");
-const serviceKey = require('./keys/serviceAccountKey.json')
 
-const dotenv  = require('dotenv');
-dotenv.config();
+// -----------------------------------------------------------
+// FIREBASE Initialization
 
-var google = new firebase.auth.GoogleAuthProvider();
-var facebook = new firebase.auth.FacebookAuthProvider();
-var twitter = new firebase.auth.TwitterAuthProvider();
-var github = new firebase.auth.GithubAuthProvider();
+let init = (firebase_config, serviceAccountKey) => {
 
-// ---------------------------------------------------------------------------
-// Administration Users
-let updateUser = (user, data, callback) => {
+  firebase.initializeApp(firebase_config);
 
-  /*
-  Examples of data
-  https://firebase.google.com/docs/auth/web/manage-users?authuser=2#update_a_users_profile
+  firebase_admin.initializeApp({
+    credential: firebase_admin.credential.cert(serviceAccountKey),
+    databaseURL: firebase_config.databaseURL
+  });  
 
-  {
-    displayName: "Jane Q. User",
-    photoURL: "https://example.com/jane-q-user/profile.jpg"
-  }
-
-  */
-
-  user.updateProfile(data).then(() => {
-    // Update successful.
-    callback(null, user.toJSON());
-  }).catch((error) => {
-    // An error happened.
-    callback(error, null);
-  });
-};
-
-let updateUserMail = (user, email, callback) => {
-
-  user.updateEmail(email).then(() => {
-    // Update successful.
-    callback(null, user);
-  }).catch(error => {
-    // An error happened.
-    callback(error, null);
-  });
-
-}
-
-// ---------------------------------------------------------------------------
-// Create Key Store for Token
-
-var nJwt = require('njwt');
-var secureRandom = require('secure-random');
-
-// create token
-let getToken = (data) => {
-  var signingKey = secureRandom(256, {type: 'Buffer'});
-  var jwt = nJwt.create(data, signingKey);
-
-  return {
-    token: jwt,
-    auth: jwt.compact()   
-  };
-
-};
-
-// ---------------------------------------------------------------------------
-// Administration Users
-
-let getUserInfo = (uid, callback) => {
-
-  admin.auth().getUser(uid).then(user => {
-    callback(null, user);
-  }).catch((error) => {
-    callback(error, null);
-  });
-
-};
-
-let updateUserbyID = (uid, data, callback) => {
-
-  /*
-    Examples data user profile
-
-    {
-      email: 'modifiedUser@example.com',
-      phoneNumber: '+11234567890',
-      emailVerified: true,
-      password: 'newPassword',
-      displayName: 'Jane Doe',
-      photoURL: 'http://www.example.com/12345678/photo.png',
-      disabled: true
-    }
-
-  */
-
-  admin.auth().updateUser(uid, data).then(user => {
-    // See the UserRecord reference doc for the contents of userRecord.
-    callback(null, user.toJSON());
-  }).catch(error => {
-    callback(error, null);
-  });
-
-};
-
-// ---------------------------------------------------------------------------
-// Initialize Firebase
-let init = () => {
-
-  firebase.initializeApp(config.config);
-
-  admin.initializeApp({
-    credential: serviceKey,
-    databaseURL: config.FIREBASE_ADMIN_DBURL
-  });
-
-};
-
-// signin with email and password
-let signIn = (email, password, callback) => {
-  firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
-    callback(null, result.user);
-  }).catch(error => {
-    callback(error, null);
-  });
-};
-
-// signup with email and password
-let signUp = (email, password, callback) => {
-  firebase.auth().createUserWithEmailAndPassword(email, password).then(result => {
-    callback(null, result.user);
-  }).catch(error => {
-    callback(error, null);
-  });
-};
-
-// logout
-let logOut = (callback) => {
-  firebase.auth().signOut().then(() => {
-    // Sign-out successful.
-    callback(null);
-  }).catch(error => {
-    // An error happened.
-    callback(error);
-  });
-};
-
-// send email verification
-let verifyMail = (email, options, callback) => {
-
-  firebase.auth().sendSignInLinkToEmail(email, options).then(() => {
-      // Verification email sent.
-      callback(null)
-  }).catch(error => {
-    // Error occurred. Inspect error.code.
-    callback(error)
-  });
-};
-
-// loginin with email link
-let checkMail = (email, url, callback) => {
-
-  firebase.auth().signInWithEmailLink(email, url)
-    .then(result => {
-      callback(null, result.user);
-    })
-    .catch(error => {
-      callback(error, null);
-    });
-
-};
-
-// reset password
-let passwordReset = (email, options, callback) => {
-  
-  firebase.auth().sendPasswordResetEmail(email, options).then(() => {
-    callback(null);
-  }).catch(error => {
-    // Handle Errors here.
-    callback(error);
-  });
 };
 
 // ----------------------------------------------------
@@ -212,17 +45,8 @@ let getError = error => {
 
 module.exports = {
   init,
-  logOut,
-  signIn,
-  signUp,
-  getError,
-  verifyMail,
-  checkMail,
-  getToken,
-  passwordReset,
-  updateUser,
-  updateUserMail,
-  getUserInfo,
-  updateUserbyID
+  firebase,
+  firebase_admin,
+  getError
 };
 

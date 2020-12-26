@@ -1,32 +1,53 @@
 <!doctype html>
-<html lang="en" class="h-100">
+<html lang="en">
+
   <head>
     <% include include/head.ejs %>
-    <link rel="stylesheet" href="css/dashboard-light.css">
+    <link rel="stylesheet" href="/css/dashboard-light.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
   </head>
 
-  <body class="d-flex flex-column h-100">
-    <!-- Begin page content -->
-    <main role="main" class="flex-shrink-0">
+  <body>
+    <% include include/dashboard_nav.ejs %>
 
-      <div class="container">
+    <div class="container-fluid">
+      <div class="row">
 
-        <form method="POST" class="form-inline" action="/auth/profile">
+        <% include include/dashboard_sidebar.ejs %>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2"><%= user.email %></h1>
             
-            <div class="form-group mb-2">
-                <label for="displayName" class="sr-only">Display name</label>
-                <input type="text" class="form-control" id="displayName" placeholder="Display Name" name="displayname">
-                <input type="hidden" class="form-control" value="<%= uid %>" name="uid">
+          </div>
+
+          <form method="POST" class="form" action="/user/update">
+            
+            <input type="hidden" class="form-control" value="<%= uid %>" name="uid" id="uid">
+
+            <input type="text" class="form-control is-invalid" id="displayName" name="displayName" placeholder="Display Name" aria-label="display name" value="<%= user.displayName %>" autofocus>
+            <div class="invalid-feedback" id="validName">
+              Input a valid display name.
             </div>
 
-            <button class="btn btn-primary mb-2" type="submit" style="margin-left: 5px;">Update</button>
+            <input type="text" class="form-control is-invalid" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" aria-label="phone number" value="<%= user.phoneNumber %>">
+            <div class="invalid-feedback" id="validNumber">
+              Input a valid phone number +XX XXX XXX XXXX
+            </div>
 
-        </form>
+            <button class="btn btn-primary mb-2" type="submit" style="margin-left: 5px;" id="btnUpdate">Update</button>
 
+            <!-- aggiungere reset della password -->
+            <!-- Cancellazione utente aggungere disabilitazione temporanea per 15 giorni con accesso, alla scadenza bisogna inviare una mail per conferma. -->
+            <!-- Mailing list e nuova tabella con le impostazioni utente -->
+
+          </form>
+
+        </main>
       </div>
-    </main>
+    </div>
 
-    <% include include/footer.ejs %>
-    
+    <% include include/scripts.ejs %>
+    <script src="/js/profile.js"></script>
   </body>
-</html>
+  </html>

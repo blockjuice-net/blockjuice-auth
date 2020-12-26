@@ -5,23 +5,20 @@ const log     = require('logbootstrap');
 var dotenv  = require('dotenv');
 dotenv.config();
 
-var google, facebook, twitter, github, microsoft, apple;
+var google, github;
 
 const FIREBASE_EMAIL_VERIFY = 'http://localhost:' + process.env.PORT + '/auth/check';
 const FIREBASE_RESET_PWD = 'http://localhost:' + process.env.PORT + '/signin';
 
-var firebase;
+var auth;
 
 router.use(function (req, res, next) {
-  firebase = req.app.locals.firebase;
+  
+  auth = req.app.locals.firebase.auth();
 
-  google = new firebase.auth.GoogleAuthProvider();
-  facebook = new firebase.auth.FacebookAuthProvider();
-  twitter = new firebase.auth.TwitterAuthProvider();
-  github = new firebase.auth.GithubAuthProvider();
-  microsoft = new firebase.auth.OAuthProvider('microsoft.com');
-  apple = new firebase.auth.OAuthProvider('apple.com');
-
+  google = new req.app.locals.firebase.auth.GoogleAuthProvider();
+  github = new req.app.locals.firebase.auth.GithubAuthProvider();
+  
   next();
 });
 
@@ -32,19 +29,11 @@ router.get('/provider/:provider', (req, res, next) => {
 
   if (providerParam == 'google') {
     provider = google;
-  } else if (providerParam == 'facebook') {
-    provider = facebook;
-  } else if (providerParam == 'twitter') {
-    provider = twitter;
   } else if (providerParam == 'github') {
     provider = github;
-  } else if (providerParam == 'microsoft') {
-    provider = microsoft;
-  } else if (providerParam == 'apple') {
-    provider = apple;
-  }
+  };
 
-  firebase.auth().signInWithPopup(provider).then(result => {
+  auth.signInWithPopup(provider).then(result => {
     // This gives you a Google Access Token. You can use it to access the Google API.
     var token = result.credential.accessToken;
     // The signed-in user info.
@@ -53,7 +42,7 @@ router.get('/provider/:provider', (req, res, next) => {
     log('info', 'Provider ' + provider);
     log('info', 'User info: ' + JSON.stringify(result.user));
 
-    res.redirect('/user/profile/' + result.user.uid);
+    res.redirect('/user/dashboard/' + result.user.uid);
 
     // ...
   }).catch(function(error) {
@@ -80,25 +69,22 @@ router.get('/provider/:provider', (req, res, next) => {
 
 router.post('/resetpassword', (req, res, next) => {
  
-  var email = req.body.email;
-
-  console.log('Body ' +  JSON.stringify(req.body));
+  var emailAddress = req.body.email;
 
   var options = {
     url: FIREBASE_RESET_PWD,
     handleCodeInApp: true
   };
 
-  firebase.auth().sendPasswordResetEmail(email, options).then(() => {
-    
+  auth.sendPasswordResetEmail(emailAddress).then(() => {
     log('success','Reset Password OK');
 
     res.render('checkemail', { 
       title: process.env.TITLE,
       message: 'Please check your email and click link to reset your password ...'
     });
-
-  }).catch(error => {
+  }).catch(function(error) {
+    // An error happened.
     renderError(res, 'signin', parseFirebaseError(error));
   });
 
@@ -124,9 +110,9 @@ router.get('/check', (req, res, next) => {
               '\omode' + mode + 
               '\olang' + lang);
   
-  firebase.auth().signInWithEmailLink(email, url).then(result => {
+  auth.signInWithEmailLink(email, url).then(result => {
     log('success', '/check OK');
-    res.redirect('/user/profile/' + result.user.uid);
+    res.redirect('/user/dashboard/' + result.user.uid);
   }).catch(error => {
     renderError(res, 'signup', parseFirebaseError(error));
   });
@@ -139,9 +125,11 @@ router.post('/signin', (req, res, next) => {
   var email = req.body.email;
   var password = req.body.password;
 
-  firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
+  log('info', 'LogIn by email: ' + email);
+
+  auth.signInWithEmailAndPassword(email, password).then(result => {
     log('success', '/signin OK');
-    res.redirect('/user/profile/' + result.user.uid);
+    res.redirect('/user/dashboard/' + result.user.uid);
   }).catch(error => {
     renderError(res, 'signin', parseFirebaseError(error));
   });
@@ -154,14 +142,15 @@ router.post('/signup', (req, res, next) => {
   var email = req.body.email;
   var password = req.body.password;
 
-  firebase.auth().createUserWithEmailAndPassword(email, password).then(result => {
+  auth.createUserWithEmailAndPassword(email, password).then(result => {
     
     var options = {
       url: FIREBASE_EMAIL_VERIFY + '?email=' + email,
       handleCodeInApp: true
     };
 
-    log('success', '/signup OK');
+    log('success', '/signup Ok.');
+    log('info', 'email: ' + email);
   
     firebase.auth().sendSignInLinkToEmail(email, options).then(() => {
       log('success', '... send link to email OK');
