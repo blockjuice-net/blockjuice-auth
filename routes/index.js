@@ -5,6 +5,10 @@ const log   = require('logbootstrap');
 var dotenv  = require('dotenv');
 dotenv.config();
 
+router.get('/', (req, res, next) => {
+  res.redirect('/signin')
+});
+
 router.get('/signin', (req, res, next) => {
 
   res.render('signin', { 
@@ -23,17 +27,6 @@ router.get('/signup', (req, res, next) => {
     typeform: 'Sign Up',
     error: '',
     message: ''
-  });
-
-});
-
-router.get('/profile/:uid', (req, res, next) => {
-
-  var uid = req.params.uid 
-
-  res.render('profile', { 
-    title: process.env.TITLE,
-    uid: uid
   });
 
 });

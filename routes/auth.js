@@ -33,6 +33,8 @@ router.get('/provider/:provider', (req, res, next) => {
     provider = github;
   };
 
+  log('info', 'LogIn with provider ' + provider);
+
   auth.signInWithPopup(provider).then(result => {
     // This gives you a Google Access Token. You can use it to access the Google API.
     var token = result.credential.accessToken;
@@ -76,13 +78,14 @@ router.post('/resetpassword', (req, res, next) => {
     handleCodeInApp: true
   };
 
-  auth.sendPasswordResetEmail(emailAddress).then(() => {
+  auth.sendPasswordResetEmail(emailAddress, options).then(() => {
     log('success','Reset Password OK');
 
     res.render('checkemail', { 
       title: process.env.TITLE,
       message: 'Please check your email and click link to reset your password ...'
     });
+
   }).catch(function(error) {
     // An error happened.
     renderError(res, 'signin', parseFirebaseError(error));
@@ -142,6 +145,8 @@ router.post('/signup', (req, res, next) => {
   var email = req.body.email;
   var password = req.body.password;
 
+  log('info', 'create user by email with ' + email);
+
   auth.createUserWithEmailAndPassword(email, password).then(result => {
     
     var options = {
@@ -152,7 +157,7 @@ router.post('/signup', (req, res, next) => {
     log('success', '/signup Ok.');
     log('info', 'email: ' + email);
   
-    firebase.auth().sendSignInLinkToEmail(email, options).then(() => {
+    auth.sendSignInLinkToEmail(email, options).then(() => {
       log('success', '... send link to email OK');
       res.render('checkemail', { 
         title: process.env.TITLE,

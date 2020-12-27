@@ -1,13 +1,11 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-  <% include include/head.ejs %>
-  <link rel="stylesheet" href="/css/dashboard-light.css">
-  <link rel="stylesheet" href="/css/dashboard.css">
+  <% include include/head_dashboard.ejs %>
 </head>
 
 <body>
+
   <% include include/dashboard_nav.ejs %>
 
   <div class="container-fluid">
@@ -16,21 +14,11 @@
       <% include include/dashboard_sidebar.ejs %>
 
       <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Dashboard 
-
-            <% if (user.displayName) { %>
-              @<%= user.displayName %>
-            <% } else { %>
-              <%= user.mail %>
-            <% } %>
-
-          </h1>
-          
-          
-        </div>
-        
+          <% include include/profile_name.ejs %>
+          <div class="row">
+            
+          </div>
+      
       </main>
     </div>
   </div>

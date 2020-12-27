@@ -1,53 +1,61 @@
 <!doctype html>
 <html lang="en">
+<head>
+  <% include include/head_dashboard.ejs %>
+</head>
 
-  <head>
-    <% include include/head.ejs %>
-    <link rel="stylesheet" href="/css/dashboard-light.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
-  </head>
+<body>
+  <% include include/dashboard_nav.ejs %>
 
-  <body>
-    <% include include/dashboard_nav.ejs %>
+  <div class="container-fluid">
+    <div class="row">
 
-    <div class="container-fluid">
-      <div class="row">
+      <% include include/dashboard_sidebar.ejs %>
 
-        <% include include/dashboard_sidebar.ejs %>
-
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2"><%= user.email %></h1>
-            
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+        
+        <% include include/profile_name.ejs %>
+        
+        <div class="row">
+          
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Dati del Profilo</h5>
+                <p class="card-text">Display name: <%= user.displayName %></p>
+                <p class="card-text">Phone: Number: <%= user.phoneNumber %></p>
+                <p class="card-text">
+                  <a href="/forgotpassword" class="badge badge-light">
+                    Reset password
+                  </a>
+                </p>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateProfile">
+                  <i class="far fa-edit"></i> Edit
+                </button>
+              </div>
+            </div>
           </div>
 
-          <form method="POST" class="form" action="/user/update">
-            
-            <input type="hidden" class="form-control" value="<%= uid %>" name="uid" id="uid">
-
-            <input type="text" class="form-control is-invalid" id="displayName" name="displayName" placeholder="Display Name" aria-label="display name" value="<%= user.displayName %>" autofocus>
-            <div class="invalid-feedback" id="validName">
-              Input a valid display name.
+          <div class="col-sm-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Delete User</h5>
+                <p class="card-text">L'account verrà disabilitato per 15 giorni, durante i quali l'utente può continuare ad usare la piattaforma e decidere di annullare la richiesta.</p>
+                <a href="#" class="btn btn-primary">DELETE</a>
+              </div>
             </div>
+          </div>
 
-            <input type="text" class="form-control is-invalid" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" aria-label="phone number" value="<%= user.phoneNumber %>">
-            <div class="invalid-feedback" id="validNumber">
-              Input a valid phone number +XX XXX XXX XXXX
-            </div>
+        </div>
 
-            <button class="btn btn-primary mb-2" type="submit" style="margin-left: 5px;" id="btnUpdate">Update</button>
-
-            <!-- aggiungere reset della password -->
-            <!-- Cancellazione utente aggungere disabilitazione temporanea per 15 giorni con accesso, alla scadenza bisogna inviare una mail per conferma. -->
-            <!-- Mailing list e nuova tabella con le impostazioni utente -->
-
-          </form>
-
-        </main>
-      </div>
+        <!-- Modal Update Profile -->
+        <% include include/modal_updateprofile.ejs %>
+        
+      </main>
     </div>
+  </div>
 
-    <% include include/scripts.ejs %>
-    <script src="/js/profile.js"></script>
-  </body>
-  </html>
+  <% include include/scripts.ejs %>
+  <script src="/js/profile.js"></script>
+</body>
+</html>

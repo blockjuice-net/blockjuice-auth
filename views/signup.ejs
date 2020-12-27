@@ -1,48 +1,48 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
   <% include include/head.ejs %>
   <link rel="stylesheet" href="/css/signin.css">
+  <link rel="stylesheet" href="/css/login.css">
+</head>
 
-  </head>
+<body class="text-center">
 
-  <body class="text-center">
+  <form  class="form-signin" method="POST" action="/auth/signup">
+  
+    <% include include/title_sign.ejs %>
 
-    <form  class="form-signin" method="POST" action="/auth/signup">
+    <input type="email" class="form-control is-invalid" id="inputEmail" name="email" placeholder="eMail Address" aria-label="eMail" required autofocus>
+    <div class="invalid-feedback" id="validEmail">
+      Input a valid email address.
+    </div>
+  
+    <input type="password" id="inputPassword" name="password" class="form-control is-invalid" placeholder="Password" aria-label="Password" required>
+    <div id="validPwd" class="invalid-feedback">
+      Your password must be 8-20 characters long, contain letters, numbers and special characters, and must not contain spaces, or emoji.
+    </div>
+  
+    <input type="password" id="inputPasswordCompare" name="passwordCompare" class="form-control is-invalid" placeholder="Re-Type Password" aria-label="Re-Type Password" required>
+    <div id="validPwdCompare" class="invalid-feedback">
+      passwords are not the same.
+    </div>
     
-      <% include include/head_sign.ejs %>
-
-      <input type="email" class="form-control is-invalid" id="inputEmail" name="email" placeholder="eMail Address" aria-label="eMail" required autofocus>
-      <div class="invalid-feedback" id="validEmail">
-        Input a valid email address.
-      </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit" id="sign_btn"><%= typeform %></button>
     
-      <input type="password" id="inputPassword" name="password" class="form-control is-invalid" placeholder="Password" aria-label="Password" required>
-      <div id="validPwd" class="invalid-feedback">
-        Your password must be 8-20 characters long, contain letters, numbers and special characters, and must not contain spaces, or emoji.
-      </div>
+    <% include include/message_sign.ejs %>
+
+    <% include include/error_sign.ejs %>
     
-      <input type="password" id="inputPasswordCompare" name="passwordCompare" class="form-control is-invalid" placeholder="Re-Type Password" aria-label="Re-Type Password" required>
-      <div id="validPwdCompare" class="invalid-feedback">
-        passwords are not the same.
-      </div>
-      
-      <button class="btn btn-lg btn-primary btn-block" type="submit" id="sign_btn"><%= typeform %></button>
-      
-      <% include include/message_sign.ejs %>
+    <% include include/sign_social.ejs %>
 
-      <% include include/error_sign.ejs %>
-      
-      <% include include/sign_social.ejs %>
+    <% include include/footer_sign.ejs %>
 
-      <% include include/footer_sign.ejs %>
+  </form>
 
-    </form>
+  <% include include/scripts.ejs %>
 
-    <% include include/scripts.ejs %>
+  <script src="/js/signup.js"></script>
 
-    <script src="/js/signup.js"></script>
-
-  </body>
+</body>
 </html>
 

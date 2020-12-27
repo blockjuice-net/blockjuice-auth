@@ -2,8 +2,6 @@ var express   = require('express');
 var router    = express.Router();
 const log     = require('logbootstrap');
 
-var io = require('../bin/www');
-
 var dotenv  = require('dotenv');
 dotenv.config();
 
@@ -14,18 +12,25 @@ router.use(function (req, res, next) {
   next();
 });
 
+// ---------------------------------------------
+// POST /check/displayName
+// ---------------------------------------------
 router.post('/check/displayName', (req, res, next) => {
   var name = req.body.displayName;
-
   res.send(checkDuplicateName(name));
-  
 });
 
+// ---------------------------------------------
+// POST /check/phoneNumber
+// ---------------------------------------------
 router.post('/check/phoneNumber', (req, res, next) => {
   var phoneNumber = req.body.phoneNumber;
   res.send(checkDuplicatePhoneNumber(phoneNumber));
 });
 
+// ---------------------------------------------
+// POST /update
+// ---------------------------------------------
 router.post('/update', (req, res, next) => {
   
   var displayName = req.body.displayName;
@@ -49,6 +54,9 @@ router.post('/update', (req, res, next) => {
   
 });
 
+// ---------------------------------------------
+// GET /dashboard/:uid
+// ---------------------------------------------
 router.get('/dashboard/:uid', (req, res, next) => {
 
   var uid = req.params.uid;
@@ -71,6 +79,9 @@ router.get('/dashboard/:uid', (req, res, next) => {
 
 });
 
+// ---------------------------------------------
+// GET /profile/:uid
+// ---------------------------------------------
 router.get('/profile/:uid', (req, res, next) => {
 
   var uid = req.params.uid;
@@ -93,7 +104,8 @@ router.get('/profile/:uid', (req, res, next) => {
 
 });
 
-// --------------------------------------------------------------------------------------------
+// =================================================
+// Functions 
 
 let getUser = (uid, callback) => {
 

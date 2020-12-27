@@ -49,15 +49,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 // --------------------------------------------
-app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist'));
-app.use('/bootstrap-icons', express.static(__dirname + '/node_modules/bootstrap-icons'));
-app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
-app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use('/socket', express.static(__dirname + '/node_modules/socket.io-client/dist'));
 app.use('/moment', express.static(__dirname + '/node_modules/moment'));
 app.use('/lodash', express.static(__dirname + '/node_modules/lodash'));
 app.use('/axios', express.static(__dirname + '/node_modules/axios/dist'));
-app.use('/popperjs', express.static(__dirname + '/node_modules/@popperjs%2fcore/dist/cjs'));
 
 // API Routing
 app.use('/', indexRouter);
