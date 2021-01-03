@@ -1,3 +1,5 @@
 .env
+.babelrc
+firebase-config.js
+serviceAccountKey.json
 node_modules/
-keys/
