@@ -19,6 +19,7 @@
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.0",
     "firebaseui": "^4.7.1",
+    "googleapis": "^66.0.0",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
@@ -27,6 +28,8 @@
     "morgan": "~1.9.1",
     "njwt": "^1.0.0",
     "node-jose": "^2.0.0",
+    "passport": "^0.4.1",
+    "passport-google-oauth": "^2.0.0",
     "password-validator": "^5.1.1",
     "secure-random": "^1.1.2",
     "socket.io": "^3.0.4"

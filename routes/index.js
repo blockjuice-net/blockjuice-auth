@@ -42,7 +42,7 @@ router.get('/forgotpassword', (req, res, next) => {
     message: '',
     client : getClientID()
   });
-
+  
 });
 
 router.get('/logout', (req, res, next) => {
@@ -61,8 +61,10 @@ router.get('/logout', (req, res, next) => {
 let getClientID = () => {
   
   var clientid = {
-      google: process.env.GOOGLE_CLIENTID
+      google: process.env.GOOGLE_CONSUMER_KEY
   }
+
+  log('info', JSON.stringify(clientid))
 
   return clientid;
 }

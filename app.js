@@ -4,7 +4,7 @@ var path          = require('path');
 var cookieParser  = require('cookie-parser');
 var logger        = require('morgan');
 const log         = require('logbootstrap');
-var cors          = require('cors')
+var cors          = require('cors');
 
 var dotenv        = require('dotenv');
 dotenv.config();
@@ -33,8 +33,7 @@ firebase.init(firebase_config, firebase_serviceKey);
 app.locals.firebase = firebase.firebase;
 app.locals.firebase_admin = firebase.firebase_admin;
 
-// -----------------------------------------------------------
-
+// ------------------------------------------------------------------------
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -49,12 +48,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors());
 
-// --------------------------------------------
+// ------------------------------------------------------------------------
 app.use('/socket', express.static(__dirname + '/node_modules/socket.io-client/dist'));
 app.use('/moment', express.static(__dirname + '/node_modules/moment'));
 app.use('/lodash', express.static(__dirname + '/node_modules/lodash'));
 app.use('/axios', express.static(__dirname + '/node_modules/axios/dist'));
 
+// ------------------------------------------------------------------------
 // API Routing
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
@@ -63,7 +63,7 @@ app.use('/pwd', pwdRouter);
 app.use('/user', userRouter);
 app.use('/google', googleRouter);
 
-// ---------------------------------------------------
+// ------------------------------------------------------------------------
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));

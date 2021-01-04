@@ -2,11 +2,8 @@
 <html lang="en">
 <head>
   <% include include/head.ejs %>
-
-  <meta name="google-signin-client_id" content="<%= client.google %>">
-  <meta name="google-signin-cookiepolicy" content="single_host_origin">
-  <meta name="google-signin-scope" content="profile email">  
   <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta name="google-signin-client_id" content="<%= client.google %>">
 
   <link rel="stylesheet" href="/css/signin.css">
   <link rel="stylesheet" href="/css/login.css">
@@ -43,6 +40,21 @@
   </form>
 
   <% include include/scripts.ejs %>
+  
+  <script>
+
+    function onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        var id_token = googleUser.getAuthResponse().id_token;
+
+        console.log('Token: ' + id_token);
+        console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        console.log('Name: ' + profile.getName());
+        console.log('Image URL: ' + profile.getImageUrl());
+        console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    }
+
+  </script>
 
 </body>
 </html>
