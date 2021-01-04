@@ -15,7 +15,8 @@ router.get('/signin', (req, res, next) => {
     title: process.env.TITLE,
     typeform: 'Sign In',
     error: '',
-    message: ''
+    message: '',
+    client : getClientID()
   });
 
 });
@@ -26,7 +27,8 @@ router.get('/signup', (req, res, next) => {
     title: process.env.TITLE,
     typeform: 'Sign Up',
     error: '',
-    message: ''
+    message: '',
+    client : getClientID()
   });
 
 });
@@ -37,7 +39,8 @@ router.get('/forgotpassword', (req, res, next) => {
     title: process.env.TITLE,
     typeform: 'Reset Password',
     error: '',
-    message: ''
+    message: '',
+    client : getClientID()
   });
 
 });
@@ -54,6 +57,15 @@ router.get('/logout', (req, res, next) => {
   });
 
 });
+
+let getClientID = () => {
+  
+  var clientid = {
+      google: process.env.GOOGLE_CLIENTID
+  }
+
+  return clientid;
+}
 
 
 module.exports = router;

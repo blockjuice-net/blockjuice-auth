@@ -15,6 +15,7 @@ var authRouter    = require('./routes/auth');
 var tokenRouter   = require('./routes/token');
 var pwdRouter     = require('./routes/password');
 var userRouter    = require('./routes/user');
+var googleRouter  = require('./routes/google');
 
 var app = express();
 
@@ -60,6 +61,7 @@ app.use('/auth', authRouter);
 app.use('/token', tokenRouter);
 app.use('/pwd', pwdRouter);
 app.use('/user', userRouter);
+app.use('/google', googleRouter);
 
 // ---------------------------------------------------
 // catch 404 and forward to error handler

@@ -1,6 +1,7 @@
 var express   = require('express');
 var router    = express.Router();
 const log     = require('logbootstrap');
+const errors  = require('../errors');
 
 var dotenv  = require('dotenv');
 dotenv.config();
@@ -22,6 +23,7 @@ router.use(function (req, res, next) {
   next();
 });
 
+/*
 router.get('/provider/:provider', (req, res, next) => {
 
   var providerParam = req.params.provider;
@@ -47,27 +49,14 @@ router.get('/provider/:provider', (req, res, next) => {
     res.redirect('/user/dashboard/' + result.user.uid);
 
     // ...
-  }).catch(function(error) {
+  }).catch(error => {
     // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // The email of the user's account used.
-    var email = error.email;
-    // The firebase.auth.AuthCredential type that was used.
-    var credential = error.credential;
-
-    var errorMsg = errorCode + '\n' +
-                   errorMessage + '\n' + 
-                   email + '\n' +
-                   credential;
-
-    log('error', 'Error: ' + errorMsg);
-
-    renderError(res, 'signup', errorMsg);
+    errors.render(res, 'signup', error);
 
   });
 
 });
+*/
 
 router.post('/resetpassword', (req, res, next) => {
  
@@ -88,7 +77,7 @@ router.post('/resetpassword', (req, res, next) => {
 
   }).catch(function(error) {
     // An error happened.
-    renderError(res, 'signin', parseFirebaseError(error));
+    errors.render(res, 'signin', error);
   });
 
 });
@@ -117,7 +106,7 @@ router.get('/check', (req, res, next) => {
     log('success', '/check OK');
     res.redirect('/user/dashboard/' + result.user.uid);
   }).catch(error => {
-    renderError(res, 'signup', parseFirebaseError(error));
+    errors.render(res, 'signup', error);
   });
 
 });
@@ -134,7 +123,7 @@ router.post('/signin', (req, res, next) => {
     log('success', '/signin OK');
     res.redirect('/user/dashboard/' + result.user.uid);
   }).catch(error => {
-    renderError(res, 'signin', parseFirebaseError(error));
+    errors.render(res, 'signin', error);
   });
 
 });
@@ -165,57 +154,13 @@ router.post('/signup', (req, res, next) => {
       });
 
     }).catch(error => {
-      renderError(res, 'signup', error);
+      errors.render(res, 'signup', error);
     });
 
   }).catch(error => {
-    renderError(res, 'signup', parseFirebaseError(error));
+    errors.render(res, 'signup', error);
   });
 
 });
-
-// ----------------------------------------------------
-
-let renderError = (res, view, error) => {
-
-  var t;
-
-  log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-    
-  if (view == 'signup') {
-    t = 'Sign Up';
-  } else if (view == 'signin') {
-    t = 'Sign In';
-  };
-
-  res.render(view, { 
-    title: process.env.TITLE,
-    typeform: t,
-    error: parseFirebaseError(error),
-    message: ''
-  });
-
-};
-
-// parse error 
-let parseFirebaseError = error => {
-  if ((error.errorCode == 'auth/email-already-in-use') || 
-      (error.errorCode == 'auth/invalid-email') || 
-      (error.errorCode == 'auth/operation-not-allowed') ||
-      (error.errorCode == 'auth/weak-password') || 
-      (error.errorCode == 'auth/expired-action-code') || 
-      (error.errorCode == 'auth/invalid-email') || 
-      (error.errorCode == 'auth/user-disabled') ||
-      (error.errorCode == 'auth/user-not-found') ||
-      (error.errorCode == 'auth/missing-android-pkg-name') ||
-      (error.errorCode == 'auth/missing-continue-uri') ||
-      (error.errorCode == 'auth/missing-ios-bundle-id') ||
-      (error.errorCode == 'auth/invalid-continue-uri') ||
-      (error.errorCode == 'auth/unauthorized-continue-uri')) {
-        return error.errorMessage;
-  } else {
-        return 'unidentified error or unknow user';
-  }
-};
 
 module.exports = router;
