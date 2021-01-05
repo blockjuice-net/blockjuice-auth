@@ -1,9 +1,17 @@
-var express = require('express');
-var router  = express.Router();
-const log   = require('logbootstrap');
+var express     = require('express');
+var router      = express.Router();
+const log       = require('logbootstrap');
+const providers = require('../providers');
 
 var dotenv  = require('dotenv');
 dotenv.config();
+
+var auth;
+
+router.use(function (req, res, next) {
+  auth = req.app.locals.firebase.auth();
+  next();
+});
 
 router.get('/', (req, res, next) => {
   res.redirect('/signin')
@@ -16,7 +24,7 @@ router.get('/signin', (req, res, next) => {
     typeform: 'Sign In',
     error: '',
     message: '',
-    client : getClientID()
+    client : providers()
   });
 
 });
@@ -28,7 +36,7 @@ router.get('/signup', (req, res, next) => {
     typeform: 'Sign Up',
     error: '',
     message: '',
-    client : getClientID()
+    client : providers()
   });
 
 });
@@ -40,14 +48,14 @@ router.get('/forgotpassword', (req, res, next) => {
     typeform: 'Reset Password',
     error: '',
     message: '',
-    client : getClientID()
+    client : providers()
   });
   
 });
 
 router.get('/logout', (req, res, next) => {
 
-  req.app.locals.firebase.auth().signOut().then(() => {
+  auth.signOut().then(() => {
     // Sign-out successful.
     res.redirect('/signin');
   }).catch(error => {
@@ -57,17 +65,5 @@ router.get('/logout', (req, res, next) => {
   });
 
 });
-
-let getClientID = () => {
-  
-  var clientid = {
-      google: process.env.GOOGLE_CONSUMER_KEY
-  }
-
-  log('info', JSON.stringify(clientid))
-
-  return clientid;
-}
-
 
 module.exports = router;

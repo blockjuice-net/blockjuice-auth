@@ -6,57 +6,15 @@ const errors  = require('../errors');
 var dotenv  = require('dotenv');
 dotenv.config();
 
-var google, github;
-
 const FIREBASE_EMAIL_VERIFY = 'http://localhost:' + process.env.PORT + '/auth/check';
 const FIREBASE_RESET_PWD = 'http://localhost:' + process.env.PORT + '/signin';
 
 var auth;
 
-router.use(function (req, res, next) {
-  
+router.use(function (req, res, next) {  
   auth = req.app.locals.firebase.auth();
-
-  google = new req.app.locals.firebase.auth.GoogleAuthProvider();
-  github = new req.app.locals.firebase.auth.GithubAuthProvider();
-  
   next();
 });
-
-/*
-router.get('/provider/:provider', (req, res, next) => {
-
-  var providerParam = req.params.provider;
-  var provider;
-
-  if (providerParam == 'google') {
-    provider = google;
-  } else if (providerParam == 'github') {
-    provider = github;
-  };
-
-  log('info', 'LogIn with provider ' + provider);
-
-  auth.signInWithPopup(provider).then(result => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    var token = result.credential.accessToken;
-    // The signed-in user info.
-    var user = result.user;
-
-    log('info', 'Provider ' + provider);
-    log('info', 'User info: ' + JSON.stringify(result.user));
-
-    res.redirect('/user/dashboard/' + result.user.uid);
-
-    // ...
-  }).catch(error => {
-    // Handle Errors here.
-    errors.render(res, 'signup', error);
-
-  });
-
-});
-*/
 
 router.post('/resetpassword', (req, res, next) => {
  

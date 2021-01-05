@@ -3,4 +3,30 @@
 
 body {
   font-family: 'Roboto', sans-serif;
+  font-weight: 400;
 }
+
+.ultralight {
+  font-family: 'Roboto', sans-serif;
+  font-weight:100;
+} /* 300 is industry standard for normal */
+
+.light {
+  font-family: 'Roboto', sans-serif;
+  font-weight:300;
+} /* 300 is industry standard for normal */
+
+.medium {
+  font-family: 'Roboto', sans-serif;
+  font-weight:500;
+} /* 500 is industry standard for normal */
+
+.bold {
+  font-family: 'Roboto', sans-serif;
+  font-weight:700;
+} /* 500 is industry standard for normal */
+
+.heavy {
+  font-family: 'Roboto', sans-serif;
+  font-weight:900;
+} /* 500 is industry standard for normal */

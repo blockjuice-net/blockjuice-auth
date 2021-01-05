@@ -1,6 +1,7 @@
-var express   = require('express');
-var router    = express.Router();
-const log     = require('logbootstrap');
+var express     = require('express');
+var router      = express.Router();
+const log       = require('logbootstrap');
+const providers = require('../providers');
 
 var dotenv  = require('dotenv');
 dotenv.config();
@@ -55,8 +56,56 @@ router.post('/update', (req, res, next) => {
 });
 
 // ---------------------------------------------
+// GET /info/:uid
+// ---------------------------------------------
+
+/*
+
+  {
+    "uid":"....................",
+    "email":"giuseppe.zileni@gmail.com",
+    "emailVerified":true,
+    "displayName":"Giuseppe Zileni",
+    "photoURL":"https://...............",
+    "disabled":false,
+    "metadata":{
+      "lastSignInTime":"Tue, 05 Jan 2021 11:56:42 GMT",
+      "creationTime":"Tue, 05 Jan 2021 11:19:29 GMT"
+    },
+    "tokensValidAfterTime":"Tue, 05 Jan 2021 11:19:29 GMT",
+    "providerData":[
+      {
+        "uid":"9999999999999999999",
+        "displayName":"Giuseppe Zileni",
+        "email":"giuseppe.zileni@gmail.com",
+        "photoURL":"https://...........",
+        "providerId":"google.com"
+      }
+    ]
+  }
+
+*/
+
+router.get('/info/:uid', (req, res, next) => {
+
+  var uid = req.params.uid;
+
+  getUser(uid, (error, user) => {
+
+    if (error != null) {
+      res.jsonp(error);
+    } else {
+      res.jsonp(user);
+    }
+
+  });
+
+});
+
+// ---------------------------------------------
 // GET /dashboard/:uid
 // ---------------------------------------------
+
 router.get('/dashboard/:uid', (req, res, next) => {
 
   var uid = req.params.uid;
@@ -68,10 +117,14 @@ router.get('/dashboard/:uid', (req, res, next) => {
         error: error
       });
     } else {
+
+      log('info', JSON.stringify(user))
+
       res.render('dashboard', { 
         title: process.env.TITLE,
         user: user,
-        uid: user.uid
+        uid: user.uid,
+        client: providers()
       });
     }
 
@@ -96,7 +149,8 @@ router.get('/profile/:uid', (req, res, next) => {
       res.render('profile', { 
         title: process.env.TITLE,
         user: user,
-        uid: user.uid
+        uid: user.uid,
+        client: providers()
       });
     }
 
