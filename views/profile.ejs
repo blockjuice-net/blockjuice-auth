@@ -17,24 +17,25 @@
         <% include include/profile_name.ejs %>
         
         <div class="row">
-          
-          <div class="col-sm-6">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Dati del Profilo</h5>
-                <p class="card-text">Display name: <%= user.displayName %></p>
-                <p class="card-text">Phone: Number: <%= user.phoneNumber %></p>
-                <p class="card-text">
-                  <a href="/forgotpassword" class="badge badge-light">
-                    Reset password
-                  </a>
-                </p>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateProfile">
-                  <i class="far fa-edit"></i> Edit
-                </button>
+            <% if (update) { %>
+              <div class="col-sm-6">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Dati del Profilo</h5>
+                    <p class="card-text">Display name: <%= user.displayName %></p>
+                    <p class="card-text">Phone: Number: <%= user.phoneNumber %></p>
+                    <p class="card-text">
+                      <a href="/forgotpassword" class="badge badge-light">
+                        Reset password
+                      </a>
+                    </p>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateProfile">
+                      <i class="far fa-edit"></i> Edit
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+          <% } %>
 
           <div class="col-sm-6">
             <div class="card">

@@ -2,6 +2,7 @@ var express     = require('express');
 var router      = express.Router();
 const log       = require('logbootstrap');
 const providers = require('../providers');
+const _         = require('lodash');
 
 var dotenv  = require('dotenv');
 dotenv.config();
@@ -146,11 +147,13 @@ router.get('/profile/:uid', (req, res, next) => {
         error: error
       });
     } else {
+
       res.render('profile', { 
         title: process.env.TITLE,
         user: user,
         uid: user.uid,
-        client: providers()
+        client: providers(),
+        update: !(isGoogle(user.providerData))
       });
     }
 
@@ -160,6 +163,13 @@ router.get('/profile/:uid', (req, res, next) => {
 
 // =================================================
 // Functions 
+
+let isGoogle = (provider) => {
+  return _.find(provider, o => { 
+    console.log('Provider ID:' + o.providerId)
+    return o.providerId == "google.com" 
+  });
+};
 
 let getUser = (uid, callback) => {
 
