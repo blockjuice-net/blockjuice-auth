@@ -1,16 +1,22 @@
 (function () {
 
-    let secret_key = '6LfrniwaAAAAAPHlXxV3CU9JuWsrFPj4moO-CHOf';
-    let google_api = 'https://www.google.com/recaptcha/api/siteverify';
+    var secrect_key = '';
 
-    let isRecaptcha = (secret, token, callback) => {
+    axios.get('/auth/recaptcha').then(response => {
+        secrect_key = response.data;
+    }).catch(error => {
+       secrect_key = ''
+    });
 
-      axios.post(google_api, {
-          secret: secret,  // The shared key between your site and reCAPTCHA
-          response: token  // The user response token provided by the reCAPTCHA client-side integration on your site.
+    $('#sign_btn').prop('disabled', secrect_key == '');
+
+    let isRecaptcha = (token, callback) => {
+
+      axios.post('/auth/recaptcha', {
+          token: token          // The user response token provided by the reCAPTCHA client-side integration on your site.
       }).then(response => {
           console.log(JSON.stringify(response.data));
-          callback(null,response.data.success);
+          callback(null, response.data);
       }).catch(error => {
          callback(error, false);
       });
@@ -23,10 +29,12 @@
         grecaptcha.execute(secret_key, {
           action: 'submit'
         }).then(token => {
-          // Add your logic to submit to your backend server here.
-           $('#sign_btn').prop('disabled', !isRecaptcha(secret_key, token)); 
+            isRecaptcha(token, (error, recaptcha) => {
+                $('#sign_btn').prop('disabled', (error != null));
+            });
         }).catch(error => {
-          console.log(JSON.stringify(error))
+          console.log(JSON.stringify(error));
+          $('#sign_btn').prop('disabled', true);
         });
       });
     };

@@ -121,4 +121,24 @@ router.post('/signup', (req, res, next) => {
 
 });
 
+router.post('/recaptcha', (req, res, next) => {
+
+  var token = req.body.token;
+
+  axios.post('https://www.google.com/recaptcha/api/siteverify', {
+    secret: process.env.RECAPTCHA_KEY,  // The shared key between your site and reCAPTCHA
+    response: token  // The user response token provided by the reCAPTCHA client-side integration on your site.
+  }).then(response => {
+      console.log(JSON.stringify(response.data));
+      res.send(response.data.success);
+  }).catch(error => {
+      res.status(500).send(false);
+  });
+
+});
+
+router.get('/recaptcha', (req, res, next) => {
+  res.send(process.env.RECAPTCHA_KEY);
+});
+
 module.exports = router;
