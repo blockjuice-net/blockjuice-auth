@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" class="h-100">
+  <head>
+    <% include include/head.ejs %>
+    <link rel="stylesheet" href="/css/home.css">
+  </head>
+  <body class="d-flex flex-column h-100">
+    
+    <main role="main" class="flex-shrink-0" id="home">
+      <div class="container">
+        <% include include/home_nav.ejs %>
+        <h1 class="mt-5 bold">
+          <% include include/username.ejs %>
+        </h1>
+        <input type="text" id="clientGoogle" value="<%= client.google %>" v-model="clientGoogle" hidden>
+        <input type="text" id="uid" value="<%= uid %>" v-model="uid" hidden>
+        
+        <div class="row">
+          
+        </div>
+
+      </div>
+    </main>
+
+    <script src="https://apis.google.com/js/platform.js?onload=start" type="text/javascript" async defer></script>
+    <% include include/scripts.ejs %>
+    <script src="/js/home.js"></script>
+
+</body>
+</html>

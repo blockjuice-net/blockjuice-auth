@@ -1,0 +1,9 @@
+<% if (user.displayName) { %>
+    <% if (user.photoURL) { %> 
+        <img src="<%= user.photoURL %>" class="img-thumbnail" width="48px" height="48px"></img>
+    <% } %> 
+    <%= user.displayName %>
+    <h5 class="h5 light"><%= user.email %></h5>
+<% } else { %>
+    <%= user.email %>
+<% } %>

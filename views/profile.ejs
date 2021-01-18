@@ -1,62 +1,65 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <% include include/head_dashboard.ejs %>
-</head>
+<html lang="en" class="h-100">
+  <head>
+    <% include include/head.ejs %>
+    <link rel="stylesheet" href="/css/home.css">
+  </head>
+  <body class="d-flex flex-column h-100">
+    
+    <main role="main" class="flex-shrink-0" id="profile">
 
-<body>
-  <% include include/dashboard_nav.ejs %>
+      <div class="container">
+        <% include include/home_nav.ejs %>
+        <h1 class="mt-5 bold">
+          <% include include/username.ejs %>
+        </h1>
 
-  <div class="container-fluid">
-    <div class="row">
+        <!-- Update Profile Data -->
+        <% if (update) { %>
+          <div class="row">
+              <div class="col">
 
-      <% include include/dashboard_sidebar.ejs %>
-
-      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                <form method="POST" class="form" action="/user/update">
+          
+                  <input type="hidden" class="form-control" value="<%= uid %>" v-model="uid" name="uid" id="uid">
         
-        <% include include/profile_name.ejs %>
-        
-        <div class="row">
-            <% if (update) { %>
-              <div class="col-sm-6">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">Dati del Profilo</h5>
-                    <p class="card-text">Display name: <%= user.displayName %></p>
-                    <p class="card-text">Phone: Number: <%= user.phoneNumber %></p>
-                    <p class="card-text">
-                      <a href="/forgotpassword" class="badge badge-light">
-                        Reset password
-                      </a>
-                    </p>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateProfile">
-                      <i class="far fa-edit"></i> Edit
-                    </button>
+                  <input type="text" :class="isValidDislayName" v-model="displayName" id="displayName" name="displayName" placeholder="Display Name" aria-label="display name" value="<%= user.displayName %>" autofocus>
+                  <div :class="isValidFeedBackDislayName" id="validName">
+                    {{ messageDisplayName }}
                   </div>
-                </div>
-              </div>
-          <% } %>
+        
+                  <input type="text" :class="isValidPhoneNumber" v-model="phoneNumber" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" aria-label="phone number" value="<%= user.phoneNumber %>">
+                  <div :class="isValidFeedBackPhoneNumber" id="validNumber">
+                    {{ messagePhoneNumber }}
+                  </div>
+        
+                  <button class="btn btn-primary mb-2" type="submit" style="margin-left: 5px;" id="btnUpdate" :click="update">Update</button>
+        
+              </form>
 
-          <div class="col-sm-6">
+              </div>
+          </div>
+        <% } %>
+
+        <hr />
+
+        <!-- Delete User -->
+        <div class="row">
+          <div class="col">
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">Delete User</h5>
                 <p class="card-text">L'account verrà disabilitato per 15 giorni, durante i quali l'utente può continuare ad usare la piattaforma e decidere di annullare la richiesta.</p>
-                <a href="#" class="btn btn-primary">DELETE</a>
+                <a href="#" class="btn btn-primary" :click="delete">DELETE</a>
               </div>
             </div>
           </div>
-
         </div>
 
-        <!-- Modal Update Profile -->
-        <% include include/modal_updateprofile.ejs %>
-        
-      </main>
-    </div>
-  </div>
+      </div>
+    </main>
 
-  <% include include/scripts.ejs %>
-  <script src="/js/profile.js"></script>
+    <% include include/scripts.ejs %>
+    <script src="/js/profile.js"></script>
 </body>
 </html>

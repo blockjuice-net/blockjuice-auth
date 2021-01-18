@@ -1,7 +1,6 @@
 var express   = require('express');
 var router    = express.Router();
 const log     = require('logbootstrap');
-const errors  = require('../errors');
 
 var dotenv  = require('dotenv');
 dotenv.config();
@@ -35,7 +34,7 @@ router.post('/resetpassword', (req, res, next) => {
 
   }).catch(function(error) {
     // An error happened.
-    errors.render(res, 'signin', error);
+    sendError(res, 'signin', 'Sign In', error);
   });
 
 });
@@ -64,7 +63,7 @@ router.get('/check', (req, res, next) => {
     log('success', '/check OK');
     res.redirect('/user/dashboard/' + result.user.uid);
   }).catch(error => {
-    errors.render(res, 'signup', error);
+    sendError(res, 'signup', 'Sign Up', error);
   });
 
 });
@@ -81,7 +80,7 @@ router.post('/signin', (req, res, next) => {
     log('success', '/signin OK');
     res.redirect('/user/dashboard/' + result.user.uid);
   }).catch(error => {
-    errors.render(res, 'signin', error);
+    sendError(res, 'signin', 'Sign In', error);
   });
 
 });
@@ -112,11 +111,11 @@ router.post('/signup', (req, res, next) => {
       });
 
     }).catch(error => {
-      errors.render(res, 'signup', error);
+      sendError(res, 'signup', 'Sign Up', error);
     });
 
   }).catch(error => {
-    errors.render(res, 'signup', error);
+    sendError(res, 'signup', 'Sign Up', error);
   });
 
 });
@@ -140,5 +139,55 @@ router.post('/recaptcha', (req, res, next) => {
 router.get('/recaptcha', (req, res, next) => {
   res.send(process.env.RECAPTCHA_KEY);
 });
+
+// ------------------------------
+// errors
+
+let sendError = (res, view, title, error) => {
+
+  var t;
+  var errorCode = error.code;
+  var errorMessage = error.message;
+  // The email of the user's account used.
+  var email = error.email;
+  // The firebase.auth.AuthCredential type that was used.
+  var credential = error.credential;
+
+  var errorMsg = errorCode + '\n' +
+                 errorMessage + '\n' + 
+                 email + '\n' +
+                 credential;
+
+  log('error', 'Error: ' + errorMsg);
+
+  res.render(view, { 
+    title: process.env.TITLE,
+    typeform: title,
+    error: parseError(error),
+    message: ''
+  });
+
+};
+
+// parse error 
+let parseError = error => {
+  if ((error.errorCode == 'auth/email-already-in-use') || 
+      (error.errorCode == 'auth/invalid-email') || 
+      (error.errorCode == 'auth/operation-not-allowed') ||
+      (error.errorCode == 'auth/weak-password') || 
+      (error.errorCode == 'auth/expired-action-code') || 
+      (error.errorCode == 'auth/invalid-email') || 
+      (error.errorCode == 'auth/user-disabled') ||
+      (error.errorCode == 'auth/user-not-found') ||
+      (error.errorCode == 'auth/missing-android-pkg-name') ||
+      (error.errorCode == 'auth/missing-continue-uri') ||
+      (error.errorCode == 'auth/missing-ios-bundle-id') ||
+      (error.errorCode == 'auth/invalid-continue-uri') ||
+      (error.errorCode == 'auth/unauthorized-continue-uri')) {
+          return error.errorMessage;
+  } else {
+          return 'unidentified error or unknow user';
+  }
+};
 
 module.exports = router;

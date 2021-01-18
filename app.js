@@ -16,6 +16,7 @@ var tokenRouter   = require('./routes/token');
 var pwdRouter     = require('./routes/password');
 var userRouter    = require('./routes/user');
 var googleRouter  = require('./routes/google');
+var addressRouter = require('./routes/address');
 
 var app = express();
 
@@ -25,13 +26,23 @@ var app = express();
 // Firebase App (the core Firebase SDK) is always required and
 // must be listed before other Firebase SDKs
 const firebase  = require('./firebase');
-const firebase_config = require("./firebase-config.js");
-const firebase_serviceKey = require('./serviceAccountKey.json')
 
-firebase.init(firebase_config, firebase_serviceKey);
+firebase.init();
 
 app.locals.firebase = firebase.firebase;
 app.locals.firebase_admin = firebase.firebase_admin;
+
+// -----------------------------------------------------------
+// PURESTACK Configuration
+const purestack = require('./purestack');
+
+if (purestack.connect('test')) {
+  log('success', 'Connected successfully to Algorand Blockchain Test Network.');
+} else {
+  log('danger', 'Not connected to Algorand Blockchain Test Network.');
+};
+
+app.locals.purestack = purestack;
 
 // ------------------------------------------------------------------------
 // view engine setup
@@ -53,6 +64,7 @@ app.use('/socket', express.static(__dirname + '/node_modules/socket.io-client/di
 app.use('/moment', express.static(__dirname + '/node_modules/moment'));
 app.use('/lodash', express.static(__dirname + '/node_modules/lodash'));
 app.use('/axios', express.static(__dirname + '/node_modules/axios/dist'));
+app.use('/vue', express.static(__dirname + '/node_modules/vue/dist'));
 
 // ------------------------------------------------------------------------
 // API Routing
@@ -62,6 +74,7 @@ app.use('/token', tokenRouter);
 app.use('/pwd', pwdRouter);
 app.use('/user', userRouter);
 app.use('/google', googleRouter);
+app.use('/address', addressRouter);
 
 // ------------------------------------------------------------------------
 // catch 404 and forward to error handler

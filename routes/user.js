@@ -121,7 +121,7 @@ router.get('/dashboard/:uid', (req, res, next) => {
 
       log('info', JSON.stringify(user))
 
-      res.render('dashboard', { 
+      res.render('home', { 
         title: process.env.TITLE,
         user: user,
         uid: user.uid,

@@ -2,118 +2,121 @@
 
     'use strict'
 
-    var email = document.getElementById("inputEmail");
-    var email_check = document.getElementById("validEmail");
-
-    var pwd = document.getElementById("inputPassword");
-    var pwd_check = document.getElementById("validPwd");
-
-    var pwd_compare = document.getElementById("inputPasswordCompare");
-    var pwd_check_compare = document.getElementById("validPwdCompare");
-
-    var sign_btn = document.getElementById("sign_btn");
-    sign_btn.disabled = true;
-
-    let validateEmail = () => {
-        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(email.value);
-    };
-
-    let setChecked = (value) => {
-        if (value) {
-            pwd.classList.remove("is-invalid");
-            pwd.classList.add("is-valid");
-            pwd_check.classList.remove("invalid-feedback");
-            pwd_check.classList.add("valid-feedback");
-            pwd_check.innerHTML = "Ok!";
-        } else {
-            pwd_check.classList.remove("valid-feedback");
-            pwd_check.classList.add("invalid-feedback");
-            pwd_check.innerHTML = "Your password must be 8-20 characters long, contain letters, numbers and special characters, and must not contain spaces, or emoji.";
-        }
-    };
-
-    let checkValidate = (password) => {
+    let checkValidate = (password, callback) => {
 
         axios.post('/password/check', {
             password: password
         }).then(response => {
-            sign_btn.disabled = !response;
+            callback(true)
         }).catch(error => {
-            console.log(error);
-            sign_btn.disabled = true;
+            callback(false)
         });
 
     };
 
-    let checkCompare = () => {
+    var signup = new Vue({
+        el: '#signup',
+        data: {
+            email: '',
+            password: '',
+            passwordCompare: '',
+            messagePassword: 'Your password must be 8-20 characters long, contain letters, numbers and special characters, and must not contain spaces, or emoji.',
+            messagePasswordCompare: '',
+            messageMail: 'Input a valid email address.'
+        },
+        computed: {
+            isValidMail: function () {
+                return {
+                    'form-control': true,
+                    'is-invalid': !this.isMail(),
+                    'is-valid': this.isMail()
+                }
+            },
+            isValidFeedBackMail: function () {
+                return {
+                    'invalid-feedback': !this.isMail(),
+                    'valid-feedback': this.isMail()
+                }
+            },
+            isValidPassword: function () {
+                return {
+                    'form-control': true,
+                    'is-invalid': !this.isPassword(),
+                    'is-valid': this.isPassword()
+                }
+            },
+            isValidFeedBackPassword: function () {
+                return {
+                    'invalid-feedback': !this.isPassword(),
+                    'valid-feedback': this.isPassword()
+                }
+            },
+            isValidPasswordCompare: function () {
+                return {
+                    'form-control': true,
+                    'is-invalid': !this.isCompare(),
+                    'is-valid': this.isCompare()
+                }
+            },
+            isValidFeedBackPasswordCompare: function () {
+                return {
+                    'invalid-feedback': !this.isCompare(),
+                    'valid-feedback': this.isCompare()
+                }
+            }
+        },
+        methods: {
+            isMail: function () {
+                const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(this.email);
+            },
+            isPassword: function () {
 
-        if (pwd.value == pwd_compare.value && pwd.value.length > 0 && pwd_compare.value.length > 0) {
-            pwd_compare.classList.remove("is-invalid");
-            pwd_compare.classList.add("is-valid");
-            pwd_check_compare.innerHTML = 'passwords are the same.'; 
-            pwd_check_compare.classList.remove("invalid-feedback");
-            pwd_check_compare.classList.add("valid-feedback");
-            return true;
-        } else {
-            pwd_compare.classList.remove("is-valid");
-            pwd_compare.classList.add("is-invalid");
-            pwd_check_compare.innerHTML = 'passwords are not the same!';  
-            pwd_check_compare.classList.remove("valid-feedback");
-            pwd_check_compare.classList.add("invalid-feedback");
-            return false;
-        }     
+                var lowerCaseLetters = /[a-z]/g;
+                var upperCaseLetters = /[A-Z]/g;
+                var numbers = /[0-9]/g;
+                var simbol = /^[A-Za-z0-9\!\@\#\$\%\^\&\*\)\(+\=\._-]+$/g;
+                var nospace = /^\S*$/;
 
-    };
+                return (this.password.match(lowerCaseLetters) &&
+                        this.password.match(upperCaseLetters) &&
+                        this.password.match(numbers) &&
+                        this.password.match(simbol) && 
+                        this.password.match(nospace) &&
+                        this.password.length >= 8 &&
+                        this.password.length <= 20)
 
-    let checkValue = (el) => {
+            },
+            isCompare: function () {
+                return (this.passwordCompare == this.password && this.password.length > 0 && this.passwordCompare.length > 0);
+            },
+            email_change: function () {
+                if (this.isMail()) {
+                    thi.sValidMail.is
+                    this.messageMail = 'eMail address is correct.';    
+                } else {
+                    this.messageMail =  'eMail address is invalid!'; 
+                }
+            },
+            password_change: function () {
+                if (this.isPassword()) {
+                    this.messagePassword = 'Password is Ok.';    
+                } else {
+                    this.messagePassword =  'Your password must be 8-20 characters long, contain letters, numbers and special characters, and must not contain spaces, or emoji.'; 
+                }
+            },
+            passwordCompare_change: function () {
+                if (this.isCompare()) {
+                    this.messagePasswordCompare = 'Password are same.';    
+                } else {
+                    this.messagePasswordCompare =  'ERROR - Passwords are not same!.'; 
+                }
+            }
 
-        var lowerCaseLetters = /[a-z]/g;
-        var upperCaseLetters = /[A-Z]/g;
-        var numbers = /[0-9]/g;
-        var simbol = /^[A-Za-z0-9\!\@\#\$\%\^\&\*\)\(+\=\._-]+$/g;
-        var nospace = /^\S*$/;
-
-        if (pwd.value.match(lowerCaseLetters) &&
-            pwd.value.match(upperCaseLetters) &&
-            pwd.value.match(numbers) &&
-            pwd.value.match(simbol) && 
-            pwd.value.match(nospace) &&
-            pwd.value.length >= 8 &&
-            pwd.value.length <= 20) {
-            return true
-        } else {
-            return false
-        };
-
-    };
-
-    pwd.onkeyup = () => {
-        setChecked(checkValue());
-    };
-
-    pwd_compare.onkeyup = () => {
-        sign_btn.disabled = !checkCompare() && checkValue();
-    };
-
-    email.onkeyup = function () {
-       
-        if (validateEmail()) {
-            console.log('valid email')
-            email.classList.remove("is-invalid");
-            email.classList.add("is-valid");
-            email_check.innerHTML = 'email address is Ok.'; 
-            email_check.classList.remove("invalid-feedback");
-            email_check.classList.add("valid-feedback");
-        } else {
-            console.log('not valid email')
-            email.classList.remove("is-valid");
-            email.classList.add("is-invalid");
-            email_check.innerHTML = 'email address is invalid!'; 
-            email_check.classList.remove("valid-feedback");
-            email_check.classList.add("invalid-feedback");
         }
-    };
+
+
+    })
   
   }())
   

@@ -1,7 +1,6 @@
 var express         = require('express');
 var router          = express.Router();
 const log           = require('logbootstrap');
-const errors        = require('../errors');
 
 var dotenv  = require('dotenv');
 dotenv.config();

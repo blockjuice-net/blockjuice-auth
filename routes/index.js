@@ -61,7 +61,7 @@ router.get('/logout', (req, res, next) => {
   }).catch(error => {
     // An error happened.
     log('error','Code: ' + error.errorCode + ' Message: ' + error.errorMessage);
-
+    res.redirect('/');
   });
 
 });

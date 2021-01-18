@@ -8,23 +8,23 @@
 
 <body class="text-center">
 
-  <form  class="form-signin" method="POST" action="/auth/signup">
+  <form  class="form-signin" method="POST" action="/auth/signup" id="signup">
   
     <% include include/title_sign.ejs %>
 
-    <input type="email" class="form-control is-invalid" id="inputEmail" name="email" placeholder="eMail Address" aria-label="eMail" required autofocus>
-    <div class="invalid-feedback" id="validEmail">
-      Input a valid email address.
+    <input type="email" :class="isValidMail" id="inputEmail" name="email" placeholder="eMail Address" aria-label="eMail" v-model="email" :change="email_change" required autofocus>
+    <div :class="isValidFeedBackMail" id="validEmail">
+      {{ messageMail }}
     </div>
   
-    <input type="password" id="inputPassword" name="password" class="form-control is-invalid" placeholder="Password" aria-label="Password" required>
-    <div id="validPwd" class="invalid-feedback">
-      Your password must be 8-20 characters long, contain letters, numbers and special characters, and must not contain spaces, or emoji.
+    <input type="password" id="inputPassword" name="password" :class="isValidPassword" placeholder="Password" aria-label="Password" v-model="password" :change="password_change" required>
+    <div id="validPwd" :class="isValidFeedBackPassword">
+      {{ messagePassword }}
     </div>
   
-    <input type="password" id="inputPasswordCompare" name="passwordCompare" class="form-control is-invalid" placeholder="Re-Type Password" aria-label="Re-Type Password" required>
-    <div id="validPwdCompare" class="invalid-feedback">
-      passwords are not the same.
+    <input type="password" id="inputPasswordCompare" name="passwordCompare" :class="isValidPasswordCompare" placeholder="Re-Type Password" aria-label="Re-Type Password" v-model="passwordCompare" :change="passwordCompare_change" required>
+    <div id="validPwdCompare" :class="isValidFeedBackPasswordCompare">
+      {{ messagePasswordCompare }}
     </div>
 
     <button class="g-recaptcha" 
