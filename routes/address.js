@@ -4,7 +4,6 @@ const log     = require('logbootstrap');
 var moment    = require('moment');
 var axios     = require('axios');
 const path    = require('path');
-const mail    = require('../mail');
 
 var dotenv  = require('dotenv');
 dotenv.config();
@@ -35,27 +34,37 @@ router.post('/add', (req, res, next) => {
 
   log('info', 'create address for user ' + uid);
 
+  purestack.create_account((error, account) => {
+
+    if (error == null) {
+      // send mail
+      database.ref('users/' + uid).set({
+        uid: uid,
+        address: account.address,
+        secret: secretKeyMnemonic,
+        enabled : true,
+        created_ts: moment.utc().format(),
+        level: 0
+      });
+  
+      res.send({
+        account: account.address,
+        secret: account.secretKeyMnemonic
+      });
+
+    } else {
+      res.status(400).send({
+        account: '',
+        secret: ''
+      })
+    };
+
+  });
+
+  /*
   purestack.create_account().then(account => {
 
-    // https://github.com/bdcorps/candymail /info/uid
-
-    // axios get
-
-    
-
-    /*
-
-    
-
-    {
-      from: '"Fred Foo 👻" <foo@example.com>', // sender address
-      to: "bar@example.com, baz@example.com", // list of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // plain text body
-      html: "<b>Hello world?</b>", // html body
-    }
-
-    */
+    // send mail
 
     database.ref('users/' + uid).set({
       uid: uid,
@@ -68,6 +77,7 @@ router.post('/add', (req, res, next) => {
     res.send(account.secretKeyMnemonic);
 
   });
+  */
 
 });
 
@@ -82,31 +92,5 @@ router.post('/recovery', (req, res, next) => {
   })
 
 });
-
-// ---------------------------------
-let sendMail = (destination) => {
-
-  axios.get('/user/info/' + uid).then(response => {
-  // handle success
-  // console.log(response);
-  const mailconfig = path.resolve('mailconfig.json');
-  log('info', JSON.stringify(mailconfig)); // !! HIDE. ONLY FOR DEBUG
-
-  var email = {
-    from: '"Fred Foo 👻" <foo@example.com>', // sender address
-    to: destination, // list of receivers
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>", // html body
-  };
-
-  
-
-  }).catch(error => {
-  // handle error
-  console.log(error);
-  });
-
-}
 
 module.exports = router;

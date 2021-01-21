@@ -48,9 +48,9 @@ let purestack = {
         };
         return isConnect;
     },
-    create_account: () => {
+    create_account: (callback) => {
 
-        return new Promise((resolve, reject) => {
+        (async () => {
 
             var accountResponse = {
                 address: '',
@@ -62,9 +62,12 @@ let purestack = {
             accountResponse.address = account.addr;
             accountResponse.secretKeyMnemonic = algosdk.secretKeyToMnemonic(account.sk);
 
-            resolve(accountResponse);
+            callback(null, accountResponse);
 
+        })().catch(e => {
+            callback(e, null)
         });
+
     },
     recovered_account: (mnemonic) => {
 
