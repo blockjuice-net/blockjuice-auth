@@ -1,0 +1,9 @@
+{
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: "giuseppe.zileni@gmail.com",
+      pass: "mar1annaval3r1a!Z44"
+    }
+}

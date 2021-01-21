@@ -1,16 +1,28 @@
 (function () {
     'use strict'
 
+    let getAddress = (uid, callback) => {
+
+        axios.get('/address/' + uid).then(response => {
+            console.log(response.data);
+            callback(response.data);
+        }).catch(error => {
+            console.log(error);
+            callback(null);
+        });
+  
+    };
+
     let getInfoUser = (id, callback) => {
 
         axios.get('/user/info/' + id).then(response => {
             console.log(response.data);
-            callback(false, response.data);
+            callback(null, response.data);
         }).catch(error => {
             console.log(error);
             callback(error, null);
         });
-  
+    
     };
 
     var home = new Vue({
@@ -18,7 +30,23 @@
         data: {
             viewSignOut: true,
             uid: '',
-            clientGoogle: ''
+            clientGoogle: '',
+            error: ''
+        },
+        computed: {
+            address: function () {
+                getAddress(this.uid, user_address => {
+                    return user_address;
+                });
+            },
+            viewSignOut: function () {
+                return !(this.isGoogle(user.providerData) && this.infoUser() != null)
+            },
+            infoUser: function () {
+                getInfoUser(this.uid, infoUser => {
+                    return infoUser;
+                })
+            }
         },
         methods: {
             GoogleSignOut: function () {
@@ -27,6 +55,9 @@
                     console.log('User signed out.');
                     location.href = '/';
                 });
+            },
+            createAddress: function () {
+
             },
             isGoogle: function (provider) {
                 return _.find(provider, o => { 
@@ -57,10 +88,6 @@
                     // Scopes to request in addition to 'profile' and 'email'
                     //scope: 'additional_scope'
                 });
-            });
-            
-            getInfoUser(this.uid, (err, user) => {
-                this.viewSignOut = !this.isGoogle(user.providerData) && !err;
             });
         }
     })

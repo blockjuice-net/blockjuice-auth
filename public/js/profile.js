@@ -33,7 +33,8 @@
       uid: '',
       phoneNumber: '',
       messageDisplayName: 'Input a valid display name.',
-      messagePhoneNumber: 'Input a valid phone number +XX XXX XXX XXXX'
+      messagePhoneNumber: 'Input a valid phone number +XX XXX XXX XXXX',
+      error: ''
     },
     computed: {
         isValidPhoneNumber: function () {
