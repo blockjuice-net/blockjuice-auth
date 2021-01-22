@@ -7,10 +7,11 @@ const _         = require('lodash');
 var dotenv  = require('dotenv');
 dotenv.config();
 
-var admin;
+var admin, database;
 
 router.use(function (req, res, next) {
   admin = req.app.locals.firebase_admin.auth();
+  database = req.app.locals.firebase.database();
   next();
 });
 
@@ -112,6 +113,7 @@ router.get('/dashboard/:uid', (req, res, next) => {
   var uid = req.params.uid;
 
   getUser(uid, (error, user) => {
+
     if (error != null) {
       res.render('error', { 
         title: process.env.TITLE,
@@ -119,14 +121,21 @@ router.get('/dashboard/:uid', (req, res, next) => {
       });
     } else {
 
-      log('info', JSON.stringify(user))
+      log('info', JSON.stringify(user));
 
-      res.render('home', { 
-        title: process.env.TITLE,
-        user: user,
-        uid: user.uid,
-        client: providers()
+      database.ref('/users/' + uid).once('value').then((snapshot) => {
+        var address = (snapshot.val() && snapshot.val().address) || '';
+        log('info', 'address: ' + address);
+        res.render('home', { 
+          title: process.env.TITLE,
+          user: user,
+          uid: user.uid,
+          address: address,
+          client: providers()
+        });
+        
       });
+      
     }
 
   });

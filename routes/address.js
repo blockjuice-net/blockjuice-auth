@@ -29,55 +29,22 @@ router.get('/:uid', (req, res,next) => {
 });
 
 router.post('/add', (req, res, next) => {
- 
+
   var uid = req.body.uid;
+  var address = req.body.address;
 
-  log('info', 'create address for user ' + uid);
-
-  purestack.create_account((error, account) => {
-
-    if (error == null) {
-      // send mail
-      database.ref('users/' + uid).set({
-        uid: uid,
-        address: account.address,
-        secret: secretKeyMnemonic,
-        enabled : true,
-        created_ts: moment.utc().format(),
-        level: 0
-      });
-  
-      res.send({
-        account: account.address,
-        secret: account.secretKeyMnemonic
-      });
-
+  database.ref('users/' + uid).set({
+    uid: uid,
+    address: address,
+    created_at: moment.utc().format(),
+    update_at: moment.utc().format()
+  }, error => {
+    if (error) {
+      res.status(400).send(error);
     } else {
-      res.status(400).send({
-        account: '',
-        secret: ''
-      })
-    };
-
+      res.status(200).send('Data saved successfully!');
+    }
   });
-
-  /*
-  purestack.create_account().then(account => {
-
-    // send mail
-
-    database.ref('users/' + uid).set({
-      uid: uid,
-      address: account.address,
-      enabled : true,
-      created_ts: moment.utc().format(),
-      level: 0
-    });
-
-    res.send(account.secretKeyMnemonic);
-
-  });
-  */
 
 });
 

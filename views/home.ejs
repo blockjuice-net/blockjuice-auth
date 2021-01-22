@@ -3,29 +3,36 @@
   <head>
     <% include include/head.ejs %>
     <link rel="stylesheet" href="/css/home.css">
+    <% include include/firebase.ejs %>
   </head>
   <body class="d-flex flex-column h-100">
     
-    <main role="main" class="flex-shrink-0" id="home">
-      <div class="container">
+    <main role="main" class="flex-shrink-0">
+      <div class="container" id="home">
         <% include include/home_nav.ejs %>
         <h1 class="mt-5 bold">
           <% include include/username.ejs %>
         </h1>
         <input type="text" id="clientGoogle" value="<%= client.google %>" v-model="clientGoogle" hidden>
         <input type="text" id="uid" value="<%= uid %>" v-model="uid" hidden>
+        <input type="text" id="address" value="<%= address %>" v-model="wallet" hidden>
 
         <!-- ADDRESS ALGORAND -->
         <div class="row">
-          <!-- se non esiste abilitare un bottone per a creazione dell'account con invio mail con la frase mnemonica -->
-          <!-- https://github.com/bdcorps/candymail -->
-          <!-- se invece esiste visualizzare l'address della rete algorand -->
+          
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title">Address</h5>
-                <p class="card-text">{{ address }}</p>
-                <a href="#" :click="createAddress(uid)" class="btn btn-primary" v-show="address!='">Create Account</a>
+
+                <div class="alert alert-primary" role="alert" v-if="isAddress">
+                  {{ wallet }}
+                </div>
+                
+                <button type="button" :class="editAddress" data-toggle="modal" data-target="#modalAddress">
+                  Edit Wallet <i class="fas fa-exclamation-triangle" v-if="wallet=='"></i>
+                </button>
+
               </div>
             </div>
           </div>
@@ -50,11 +57,14 @@
           </div>
         </div>
 
+        <% include include/modal_address.ejs %>
       </div>
+      
     </main>
 
     <script src="https://apis.google.com/js/platform.js?onload=start" type="text/javascript" async defer></script>
     <% include include/scripts.ejs %>
+    
     <script src="/js/home.js"></script>
 
 </body>

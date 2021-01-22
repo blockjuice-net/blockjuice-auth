@@ -76,6 +76,11 @@ app.use('/user', userRouter);
 app.use('/google', googleRouter);
 app.use('/address', addressRouter);
 
+// ATTENZIONE !!!! Utilizzare CORS per proteggere questo ENDPOINT
+app.get('/firebase', (req, res, next) => {
+  res.send(firebase.firebase_config);
+});
+
 // ------------------------------------------------------------------------
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

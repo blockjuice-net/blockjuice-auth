@@ -28,6 +28,7 @@ let init = () => {
 module.exports = {
   init,
   firebase,
-  firebase_admin
+  firebase_admin,
+  firebase_config
 };
 
