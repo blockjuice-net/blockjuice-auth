@@ -47,12 +47,9 @@ router.post('/update', (req, res, next) => {
 
   admin.updateUser(uid, data).then(user => {
     log('success','UPDATED User: ' + JSON.stringify(user.toJSON()));
-    res.redirect('/user/dashboard/' + uid);
+    res.redirect('/user/info/' + uid);
   }).catch(error => {
-    res.render('error', { 
-      title: process.env.TITLE,
-      error: error
-    });
+    res.status(400).send(error);
   });
   
 });
@@ -95,7 +92,7 @@ router.get('/info/:uid', (req, res, next) => {
   getUser(uid, (error, user) => {
 
     if (error != null) {
-      res.jsonp(error);
+      res.status(400).json(error);
     } else {
       res.jsonp(user);
     }
@@ -104,83 +101,36 @@ router.get('/info/:uid', (req, res, next) => {
 
 });
 
-// ---------------------------------------------
-// GET /dashboard/:uid
-// ---------------------------------------------
-
-router.get('/dashboard/:uid', (req, res, next) => {
+router.get('/provider/:uid/:provider', (req, res, next) => {
 
   var uid = req.params.uid;
+  var provider = req.params.provider;
 
   getUser(uid, (error, user) => {
 
-    if (error != null) {
-      res.render('error', { 
-        title: process.env.TITLE,
-        error: error
+    if (error == null) {
+
+      var p;    
+
+      var result = _.find(user.providerData, o => { 
+        if (provider == 'google') {
+          p = "google.com"
+        };
+        return o.providerId == p 
       });
+
+      res.status(200).send(result);
     } else {
-
-      log('info', JSON.stringify(user));
-
-      database.ref('/users/' + uid).once('value').then((snapshot) => {
-        var address = (snapshot.val() && snapshot.val().address) || '';
-        log('info', 'address: ' + address);
-        res.render('home', { 
-          title: process.env.TITLE,
-          user: user,
-          uid: user.uid,
-          address: address,
-          client: providers()
-        });
-        
-      });
-      
+      res.status(400).send(error);
     }
 
   });
 
 });
-
-// ---------------------------------------------
-// GET /profile/:uid
-// ---------------------------------------------
-router.get('/profile/:uid', (req, res, next) => {
-
-  var uid = req.params.uid;
-
-  getUser(uid, (error, user) => {
-    if (error != null) {
-      res.render('error', { 
-        title: process.env.TITLE,
-        error: error
-      });
-    } else {
-
-      res.render('profile', { 
-        title: process.env.TITLE,
-        user: user,
-        uid: user.uid,
-        client: providers(),
-        update: !(isGoogle(user.providerData))
-      });
-    }
-
-  });
-
-});
-
 
 
 // =================================================
 // Functions 
-
-let isGoogle = (provider) => {
-  return _.find(provider, o => { 
-    console.log('Provider ID:' + o.providerId)
-    return o.providerId == "google.com" 
-  });
-};
 
 let getUser = (uid, callback) => {
 

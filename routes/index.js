@@ -6,13 +6,17 @@ const providers = require('../providers');
 var dotenv  = require('dotenv');
 dotenv.config();
 
-var auth;
-
 router.use(function (req, res, next) {
-  auth = req.app.locals.firebase.auth();
   next();
 });
 
+router.get('/', (req, res, next) => {
+  res.render('index', { 
+    title: process.env.TITLE
+  });
+});
+
+/*
 router.get('/', (req, res, next) => {
   res.redirect('/signin')
 });
@@ -65,5 +69,6 @@ router.get('/logout', (req, res, next) => {
   });
 
 });
+*/
 
 module.exports = router;
